@@ -37,7 +37,7 @@ La fuente de verdad del dominio vive en `knowledge-base/`. **Leé el archivo rel
 | [09_decisiones_y_supuestos.md](knowledge-base/09_decisiones_y_supuestos.md) | DD-01 a DD-07, SU-01 a SU-05 |
 | [10_preguntas_abiertas.md](knowledge-base/10_preguntas_abiertas.md) | ⚠️ Inconsistencias a resolver ANTES de codear |
 
-> ⚠️ Resolver las preguntas de prioridad **Alta** de `10_preguntas_abiertas.md` antes de arrancar el primer change.
+> Las preguntas abiertas de prioridad Alta y Media ya fueron **resueltas por el equipo** (DD-08 a DD-15 en `09_decisiones_y_supuestos.md`). Son decisiones propias, no reglas de la cátedra: justificarlas en el `design.md` del change y mencionarlas en el README.
 
 ---
 
@@ -45,9 +45,9 @@ La fuente de verdad del dominio vive en `knowledge-base/`. **Leé el archivo rel
 
 | Agente | Rol | Skills que carga |
 |--------|-----|------------------|
-| **A — Núcleo + Turnos** | FastAPI / SQLModel / ciclo de vida / turnos | — |
-| **B — Dueños + Mascotas + README** | CRUD / SQLModel / modelos relacionales | — |
-| **C — Prácticas + Laboratorio + Tests** | async / SQL / asyncio / tests HTTP | — |
+| **Mariano — Núcleo, modelos y turnos** | FastAPI / SQLModel / ciclo de vida / transacciones | — |
+| **Facundo — Dueños, mascotas y README** | CRUD / paginación / DTO | — |
+| **Andrés — Prácticas, laboratorio y pruebas** | async / asyncio / tests HTTP | — |
 | **Orquestación** | OPSX / fundación / documentación | `kb-creator`, `roadmap-generator`, `agents-md-generator`, `skill-registry` |
 
 Los compact rules de cada skill los resuelve el orquestador desde `.atl/skill-registry.md` (generado por `skill-registry`; no versionado — no está en el repo). Esta tabla solo mapea skill→rol.
@@ -56,20 +56,27 @@ Los compact rules de cada skill los resuelve el orquestador desde `.atl/skill-re
 
 ## Roadmap de Changes
 
-El plan de implementación completo está en [CHANGES.md](CHANGES.md). Resumen:
+El plan completo está en [CHANGES.md](CHANGES.md) y el reparto, orden y comandos en [docs/DIVISION-DEL-EQUIPO.md](docs/DIVISION-DEL-EQUIPO.md). Resumen (revisión 2, 31/10/2026):
 
-- **Total**: 19 changes en 5 fases.
-- **Camino crítico** (9): `C-01 → C-04 → C-05 → C-07 → C-13 → C-14 → C-17 → C-18 → C-19`.
-- **Primer change**: `C-01` (`esqueleto-y-configuracion`).
-- **Equipo**: 3 personas (A, B, C) en paralelo, entrega esta semana.
-- **Fases**:
-  - Fase 0: Cimientos y ciclo de vida (C-01 a C-03)
-  - Fase 1: Modelos, restricciones y DTO (C-04 a C-07)
-  - Fase 2: CRUD y contratos HTTP (C-08 a C-12)
-  - Fase 3: Altas con relaciones, N+1 y asincronía (C-13 a C-15)
-  - Fase 4: Entregables y verificación (C-16 a C-19)
+- **Total**: 11 changes, un solo dueño cada uno. Equipo: Mariano, Facundo y Andrés.
+- **Camino crítico**: `fundacion-proyecto → modelos-y-esquema → reiniciar-y-seed → turnos-alta-transaccional → turnos-lecturas-y-baja → pruebas-http-y-evidencia → readme-y-entrega`.
+- **Primer change**: `fundacion-proyecto`.
 
-**Antes de cualquier `/opsx:propose`**: leé [CHANGES.md](CHANGES.md), identificá las dependencias del change y los archivos de "Leer antes".
+| # | Change | Dueño | Depende de |
+|---|---|---|---|
+| 01 | `fundacion-proyecto` | Mariano | — |
+| 02 | `modelos-y-esquema` | Mariano | 01 |
+| 03 | `duenios-y-ficha` | Facundo | 02 |
+| 04 | `practicas-catalogo` | Andrés | 02 |
+| 05 | `mascotas-y-paginacion` | Facundo | 03 |
+| 06 | `turnos-alta-transaccional` | Mariano | 02, 09 |
+| 07 | `turnos-lecturas-y-baja` | Mariano | 06 |
+| 08 | `laboratorio-sin-bloqueo` | Andrés | 01 |
+| 09 | `reiniciar-y-seed` | Mariano | 02 |
+| 10 | `pruebas-http-y-evidencia` | Andrés | 03 a 09 |
+| 11 | `readme-y-entrega` | Facundo | 10 |
+
+**Antes de cualquier `/opsx:propose`**: leé [CHANGES.md](CHANGES.md), verificá que las dependencias del change estén archivadas y mergeadas, y leé los archivos de "Leer antes". Tocá **solo** los archivos del change. Los DTO viven en el `schemas.py` de cada módulo y ningún módulo importa DTO de otro.
 
 ---
 
@@ -111,9 +118,9 @@ El plan de implementación completo está en [CHANGES.md](CHANGES.md). Resumen:
 ```
 1. Leer la KB relevante (knowledge-base/)               → entender el dominio
 2. Identificar el change en CHANGES.md                   → respetar dependencias
-3. /opsx:propose C-NN-nombre                             → proposal + design + specs + tasks
+3. /opsx:propose <nombre-del-change>                             → proposal + design + specs + tasks
 4. Implementar las tasks cargando skills                  → respetando las reglas duras
-5. /opsx:archive C-NN-nombre + marcar [x] en CHANGES.md  → cerrar el change
+5. /opsx:archive <nombre-del-change> + marcar [x] en CHANGES.md  → cerrar el change
 ```
 
 Aplicar TODAS las reglas duras en cada paso. Ante conflicto entre la KB y este archivo, las reglas duras prevalecen.
