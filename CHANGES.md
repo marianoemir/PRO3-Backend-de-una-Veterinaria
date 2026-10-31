@@ -119,7 +119,7 @@
 
 ## [02] `modelos-y-esquema`
 
-- **Estado**: `[ ]` pendiente · **Dueño**: Mariano · **Dependencias**: `01`
+- **Estado**: `[x]` archivado · **Dueño**: Mariano · **Dependencias**: `01`
 - **Scope** (solo `models.py`; **sin DTO, sin endpoints**):
   - `duenios/models.py`: `Duenio` (`email` UNIQUE) y `FichaDuenio` (`duenio_id` FK UNIQUE). `Duenio.ficha` devuelve **un objeto** (`uselist=False`).
   - `mascotas/models.py`: `Mascota` (`duenio_id` FK **ON DELETE RESTRICT**, índice en `duenio_id`).
