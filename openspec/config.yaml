@@ -1,0 +1,51 @@
+schema: spec-driven
+
+context: |
+  Language: spanish
+  All artifacts must be written in spanish.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+
+  Proyecto: TP "Veterinaria" (Programación III, UTN) - API con FastAPI y PostgreSQL.
+  Fuente de verdad: docs/MiniTP_Cap1a4_Consigna.pdf + knowledge-base/. Roadmap: CHANGES.md.
+
+  Stack impuesto (NO cambiar ni bajar versiones minimas):
+  Python 3.12+, FastAPI >= 0.111 (handlers async def), SQLModel >= 0.0.24,
+  SQLAlchemy 2.0 asincronico, asyncpg >= 0.30, PostgreSQL 16, python-dotenv >= 1.0,
+  uvicorn (el de fastapi[standard]).
+
+  Estructura (misma en cada modulo): app/main.py, app/core/{config,database}.py,
+  app/modules/<modulo>/{models,schemas,service,router}.py, reiniciar.py, test/.
+  Modulos: health, duenios, mascotas, practicas, turnos, laboratorio.
+  FichaDuenio vive en duenios; TurnoPractica vive en turnos.
+
+  Tablas y columnas (nombres OBLIGATORIOS, no renombrar ni quitar; ver knowledge-base/04_modelo_de_datos.md):
+  duenio, ficha_duenio, mascota, practica, turno, turno_practica.
+
+  Reglas de implementacion:
+  - Las garantias van en la base (FK, UNIQUE, CHECK). Nada de consultas previas "ya existe?":
+    se escribe, se captura IntegrityError, rollback y 409 con mensaje propio.
+  - Dinero siempre Decimal (NUMERIC), nunca float; en JSON como string.
+  - Lecturas con carga anticipada en la misma consulta (joinedload a-uno, selectinload colecciones). Sin carga perezosa.
+  - Ningun handler con llamadas bloqueantes. app/modules/laboratorio/cliente.py NO se modifica.
+  - Turno.practicas con passive_deletes=True; el borrado en cascada lo decide la base.
+  - Sin Alembic, auth, repositorios, colas, Docker ni CI. El esquema se crea con create_all desde reiniciar.py.
+  - Sin credenciales en el repo: .env ignorado, env.example sin secretos.
+  - Solo los endpoints de la tabla de knowledge-base/02_descripcion_general.md.
+  - No inventar reglas de negocio: lo no decidido es pregunta abierta (knowledge-base/10_preguntas_abiertas.md).
+
+  Verificacion: no hay suite pytest obligatoria. Cada change se verifica con un smoke
+  (uvicorn + peticiones .http o curl, y consultas SQL) y los casos de test/ cuando existan.
+
+rules:
+  proposal:
+    - Indicar siempre que queda fuera de alcance.
+    - Citar las reglas RN-* de la knowledge-base que el change cubre.
+  specs:
+    - Al menos tres escenarios verificables (esperado, error de negocio y borde).
+    - No agregar validaciones ni reglas que la consigna no enuncia.
+  design:
+    - Justificar cada decision de dominio (lado de la FK, regla de borrado, codigos HTTP).
+    - Registrar como decision propia lo que quedo abierto en 10_preguntas_abiertas.md.
+  tasks:
+    - Cada task indica como se verifica (peticion HTTP o consulta SQL esperada).
+    - Tasks de maximo 2 horas.

@@ -1,0 +1,18 @@
+# Build artifacts (not versioned)
+.atl/
+
+# Secretos y entorno
+.env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Editor / SO
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
