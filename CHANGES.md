@@ -98,7 +98,7 @@
 
 ## [01] `fundacion-proyecto`
 
-- **Estado**: `[ ]` pendiente · **Dueño**: Mariano · **Dependencias**: ninguna
+- **Estado**: `[x]` archivado · **Dueño**: Mariano · **Dependencias**: ninguna
 - **Scope**:
   - Crear `app/__init__.py`, `app/core/{__init__,config,database}.py`, `app/main.py` y `app/modules/<módulo>/{__init__,models,schemas,service,router}.py` para `health`, `duenios`, `mascotas`, `practicas`, `turnos` y `laboratorio` (stubs; `router.py` = `APIRouter()` vacío salvo `health`).
   - `app/main.py`: `lifespan` que crea el motor asincrónico y la fábrica de sesiones, los guarda en `app.state` y **cierra el motor** al apagar; incluye **los seis routers**. Sin `create_all` en el arranque (DD-01).
