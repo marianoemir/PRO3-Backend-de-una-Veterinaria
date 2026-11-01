@@ -101,8 +101,8 @@
 - **Estado**: `[x]` archivado · **Dueño**: Mariano · **Dependencias**: ninguna
 - **Scope**:
   - Crear `app/__init__.py`, `app/core/{__init__,config,database}.py`, `app/main.py` y `app/modules/<módulo>/{__init__,models,schemas,service,router}.py` para `health`, `duenios`, `mascotas`, `practicas`, `turnos` y `laboratorio` (stubs; `router.py` = `APIRouter()` vacío salvo `health`).
-  - `app/main.py`: `lifespan` que crea el motor asincrónico y la fábrica de sesiones, los guarda en `app.state` y **cierra el motor** al apagar; incluye **los seis routers**. Sin `create_all` en el arranque (DD-01).
-  - `app/core/database.py`: `create_async_engine(DATABASE_URL, echo=True)`, `async_sessionmaker(expire_on_commit=False)` y `get_session()` (una sesión por petición, desde `app.state`). `echo=True` habilita la evidencia del caso C-07.
+  - `app/main.py`: `lifespan` que llama a `crear_motor(settings.DATABASE_URL)` y `crear_fabrica(engine)` desde `app/core/database.py`, guarda el engine y la fábrica en `app.state` y **cierra el motor** al apagar; incluye **los seis routers**. Sin `create_all` en el arranque (DD-01).
+  - `app/core/database.py`: `crear_motor(url)` con `create_async_engine(url, echo=True)` y `crear_fabrica(engine)` con `async_sessionmaker(engine, expire_on_commit=False)`, más `get_session()` (una sesión por petición, desde `app.state`). `echo=True` habilita la evidencia del caso C-07.
   - `app/core/config.py`: carga `.env` con `python-dotenv`, expone `DATABASE_URL`; si falta, **falla con mensaje explícito** al arrancar.
   - `health`: `GET /health/live` → 200 `{"estado": "vivo"}` sin tocar la base; `GET /health/ready` → `SELECT 1`, 200 `{"estado": "listo", "base": "ok"}` o **503** `{"estado": "no_disponible", "base": "error"}` (DD-14). Handlers `async def`.
   - `requirements.txt` (`fastapi[standard]>=0.111`, `sqlmodel>=0.0.24`, `sqlalchemy[asyncio]>=2.0`, `asyncpg>=0.30`, `python-dotenv>=1.0`), `env.example` sin secretos.
