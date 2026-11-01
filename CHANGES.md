@@ -199,7 +199,7 @@
 
 ## [06] `turnos-alta-transaccional`
 
-- **Estado**: `[ ]` pendiente · **Dueño**: Mariano · **Dependencias**: `02`, `09`
+- **Estado**: `[x]` completado · **Dueño**: Mariano · **Dependencias**: `02`, `09`
 - **Scope** (`turnos/schemas.py`, `service.py`, `router.py`):
   - DTO: `TurnoCreate` (`mascota_id`, `fecha`, `motivo` obligatorio, `practicas` con **al menos una**), `TurnoPracticaCreate` (solo `practica_id`), `TurnoRead` (mascota resumida y prácticas con `practica_id`, `nombre`, `precio_unitario`; sin id de fila, DD-11). **Ni precio ni total en la entrada** (RN-06). Vistas resumidas propias de este módulo. `fecha` de salida en UTC.
   - `POST /turnos/` en **una sola transacción**: leer del catálogo las prácticas pedidas; si **alguna no existe** → `rollback()` → 409 y **no queda nada** (ni turno ni filas de `turno_practica`, RN-23); copiar `precio` → `precio_unitario`; calcular `total` con `Decimal`; persistir `Turno` + `TurnoPractica`; práctica repetida → PK compuesta → `IntegrityError` → `rollback()` → 409 (RN-07); mascota inexistente → 409 por FK; lista vacía → 422.
