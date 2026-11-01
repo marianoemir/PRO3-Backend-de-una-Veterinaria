@@ -251,7 +251,7 @@
 
 ## [09] `reiniciar-y-seed`
 
-- **Estado**: `[ ]` pendiente · **Dueño**: Mariano · **Dependencias**: `02`
+- **Estado**: `[x]` archivado · **Dueño**: Mariano · **Dependencias**: `02`
 - **Scope** (`reiniciar.py`):
   - Asincrónico; carga `DATABASE_URL` del mismo `.env` que la app (SU-04); importa los modelos de los cuatro módulos para poblar `SQLModel.metadata`.
   - `drop_all` → `create_all` → seed mínimo: **2 dueños (uno con ficha), 3 mascotas, 4 prácticas, 1 turno con 2 prácticas** (con `precio_unitario` copiado y `total` calculado). Ids que hacen funcionar el ejemplo del enunciado: mascota 1 = Toby (perro), práctica 1 = Consulta `15000.00`, práctica 3 = Vacuna antirrábica `12000.00`; el próximo turno recibe `id = 2`.
