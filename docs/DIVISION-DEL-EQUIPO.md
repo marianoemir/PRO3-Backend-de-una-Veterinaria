@@ -1,26 +1,45 @@
 # División del equipo — TP Veterinaria (SDD con Active Stack)
 
 **Equipo**: Mariano · Facundo · Andrés
+**Estado al**: 01/11/2026 · changes `01` y `02` **mergeados** en `main`; del `03` al `11` pendientes.
 **Fecha y hora de entrega**: `____________` ← completar entre los tres y trabajar hacia atrás desde ahí.
 **Fuente de verdad**: `docs/MiniTP_Cap1a4_Consigna.pdf`. Roadmap y detalle de cada change: `CHANGES.md`. Reglas del agente: `AGENTS.md` / `CLAUDE.md`.
 
 ---
 
+## 0. Dónde estamos y qué hace cada uno ahora
+
+**Ya está en `main`**: `01` fundacion-proyecto, `02` modelos-y-esquema y un refactor chico (el motor y la fábrica de sesiones viven en `app/core/database.py` con `crear_motor` y `crear_fabrica`; el `lifespan` de `app/main.py` los usa). Hacé `git pull` antes de empezar.
+
+**Desde ahora los tres trabajan a la vez.** Nadie espera a nadie para arrancar, salvo las dependencias de la tabla de la sección 1.
+
+| Persona | Empieza ya con | Después | Qué lo frena |
+|---|---|---|---|
+| **Mariano** | `09` reiniciar-y-seed | `06` turnos-alta-transaccional → `07` turnos-lecturas-y-baja | El `06` necesita el `09` mergeado (es suyo). No depende de Facundo ni de Andrés. |
+| **Facundo** | `03` duenios-y-ficha | `05` mascotas-y-paginacion | El `05` necesita el `03` mergeado (es suyo). |
+| **Andrés** | `04` practicas-catalogo y `08` laboratorio-sin-bloqueo | borradores de `.http` (sin commitear) | Nada: el `04` y el `08` son independientes entre sí, el orden da igual. Si el `08` ya está hecho, solo queda el `04`. |
+
+**Al final**: el `10` (pruebas, Andrés) espera que estén mergeados del `03` al `09`, y el `11` (README, Facundo) espera el `10`. La cadena más larga es la de Mariano (`09 → 06 → 07`): si Mariano se atrasa, Andrés puede tomar el `07`.
+
+**Cómo se revisa**: ver "Política de revisión" en la sección 2. En resumen: los PRs se revisan **en rondas** (se juntan dos y se revisan a la vez), salvo los que bloquean a otro, que se revisan apenas se abren.
+
+---
+
 ## 1. De un vistazo
 
-| # | Change | Dueño | Depende de | Lo revisa | Estimación* |
-|---|---|---|---|---|---|
-| 01 | `fundacion-proyecto` | Mariano | — | Facundo | 6–8 h |
-| 02 | `modelos-y-esquema` | Mariano | 01 | Facundo **y** Andrés | 8–10 h |
-| 03 | `duenios-y-ficha` | Facundo | 02 | Andrés | 7–9 h |
-| 04 | `practicas-catalogo` | Andrés | 02 | Facundo | 2–3 h |
-| 05 | `mascotas-y-paginacion` | Facundo | 03 | Andrés | 5–7 h |
-| 06 | `turnos-alta-transaccional` | Mariano | 02, 09 | Facundo **y** Andrés | 6–7 h |
-| 07 | `turnos-lecturas-y-baja` | Mariano | 06 | Andrés | 4 h |
-| 08 | `laboratorio-sin-bloqueo` | Andrés | 01 | Facundo | 3 h |
-| 09 | `reiniciar-y-seed` | Mariano | 02 | Facundo | 3 h |
-| 10 | `pruebas-http-y-evidencia` | Andrés | 03–09 (todos) | Mariano | 8–10 h |
-| 11 | `readme-y-entrega` | Facundo | 10 | Andrés | 4 h |
+| # | Change | Dueño | Depende de | Lo revisa | Estimación* | Estado |
+|---|---|---|---|---|---|---|
+| 01 | `fundacion-proyecto` | Mariano | — | Facundo | 6–8 h | ✅ mergeado |
+| 02 | `modelos-y-esquema` | Mariano | 01 | Facundo **y** Andrés | 8–10 h | ✅ mergeado |
+| 03 | `duenios-y-ficha` | Facundo | 02 | Andrés | 7–9 h | ⬜ pendiente |
+| 04 | `practicas-catalogo` | Andrés | 02 | Facundo | 2–3 h | ⬜ pendiente |
+| 05 | `mascotas-y-paginacion` | Facundo | 03 | Andrés | 5–7 h | ⬜ pendiente |
+| 06 | `turnos-alta-transaccional` | Mariano | 02, 09 | Facundo **y** Andrés | 6–7 h | ⬜ pendiente |
+| 07 | `turnos-lecturas-y-baja` | Mariano | 06 | Andrés | 4 h | ⬜ pendiente |
+| 08 | `laboratorio-sin-bloqueo` | Andrés | 01 | Facundo | 3 h | ⬜ pendiente |
+| 09 | `reiniciar-y-seed` | Mariano | 02 | Facundo | 3 h | ⬜ pendiente |
+| 10 | `pruebas-http-y-evidencia` | Andrés | 03–09 (todos) | Mariano | 8–10 h | ⬜ pendiente |
+| 11 | `readme-y-entrega` | Facundo | 10 | Andrés | 4 h | ⬜ pendiente |
 
 \* Orientativas: incluyen leer la KB, escribir los artefactos de OpenSpec y verificar.
 **Carga aproximada**: Mariano ~30 h · Facundo ~18 h · Andrés ~15 h, más las revisiones cruzadas de cada uno.
@@ -35,7 +54,7 @@ Facundo:            └──────▶ [03] ─▶ [05] ──────
 Andrés:   [08]◀─[01]└──────▶ [04] ────────────────────▶ [10] ─────────▶ [11] (Facundo)
 ```
 
-- **Todos esperan a Mariano dos veces**: a que `01` esté mergeado (para arrancar `08`) y a que `02` esté mergeado (para arrancar `03`, `04` y `09`). Por eso `01` y `02` van **primero y sin interrupciones**.
+- Los dos hitos de Mariano (`01` y `02`) **ya están mergeados**: era lo único que frenaba a los otros dos. Ahora solo quedan las dependencias de la tabla: `05` espera `03`, `06` espera `09`, `07` espera `06`, `10` espera del `03` al `09`, `11` espera `10`.
 - Después del `02` trabajan los tres a la vez sin pisarse: cada uno toca solo sus módulos.
 - `06` usa los datos del seed de `09`, por eso `09` va antes. Así Mariano no depende de los CRUD de Facundo ni de Andrés.
 - `10` (pruebas) espera a todos los endpoints. `11` (README) espera a `10`.
@@ -53,18 +72,31 @@ git checkout -b feature/<nombre-del-change>
 ```
 
 1. **Proponer** — en OpenCode, pegar el bloque `/opsx:propose` del change (sección 5). **No** implementa nada: genera `proposal.md`, `design.md`, `specs/` y `tasks.md` en `openspec/changes/<change>/`.
-2. **Revisar los 4 artefactos antes de seguir** (checklist de abajo). Avisar al revisor del change para que los mire también: es más barato corregir un `design.md` que código.
+2. **Revisar los 4 artefactos antes de seguir** (checklist de abajo). Mandarle al revisor solo `design.md` y `tasks.md` para que los mire rápido (10 minutos): es más barato corregir un diseño que código.
 3. **Aplicar** — `/opsx:apply <change>` (prompt de la sección 5). Implementa las tasks en orden.
 4. **Verificar** — correr el *Smoke* del change (en `CHANGES.md`) y pegar la **salida real** de los comandos; la explicación del agente no cuenta como evidencia.
 5. **Archivar** — `/opsx:archive <change>`. Después marcar `[x]` **solo la línea de tu change** en `CHANGES.md`.
 6. **Commit y PR** (lo hace la persona, no el agente):
    ```powershell
    git status
-   git add -A
+   git add <los archivos de tu change> openspec/changes/archive/<tu-change> openspec/specs/<tu-spec> CHANGES.md
+   git status
    git commit -m "feat(<modulo>): <change>"
    git push -u origin feature/<nombre-del-change>
    ```
-   Abrir el Pull Request en GitHub, pedir revisión al revisor de la tabla, **mergear a `main`** y avisar al grupo. Todos hacen `git pull`.
+   **No uses `git add -A`**: en Windows Git puede marcar como modificados archivos que no tocaste (diferencias de saltos de línea CRLF/LF) y se cuelan al PR. Agregá los archivos a mano y revisá el segundo `git status`: tienen que aparecer solo los tuyos. Los avisos `LF will be replaced by CRLF` son normales.
+   Después abrí el Pull Request en GitHub, pegá en la descripción la salida real del smoke, seguí la política de revisión de abajo, **mergeá a `main`** y avisá al grupo. Todos hacen `git pull`.
+
+### Política de revisión (en rondas, para ir más rápido)
+
+Revisar cada change apenas se abre frena a todos. Por eso se revisa **en rondas**:
+
+1. **Artefactos (`design.md` y `tasks.md`)**: revisión corta y enseguida, antes del `/opsx:apply`. Es lo que más ahorra: un error de diseño detectado acá no se convierte en código.
+2. **PRs de código**: cuando hay dos PRs abiertos, el revisor los mira **los dos juntos** en una sola sentada, y se mergean uno después del otro. No hace falta que cada PR espere su turno aislado.
+3. **Excepción, PRs que bloquean a otro**: se revisan **apenas se abren**, sin esperar la ronda. Son `03` (bloquea `05`), `09` (bloquea `06`) y `06` (bloquea `07`).
+4. **Mientras esperás una revisión, seguí con tu siguiente change** si no depende del que está en revisión (por ejemplo, Andrés pasa del `04` al `08`). Si depende, preparás borradores fuera de `openspec/`.
+5. **Qué se mira en un PR** (15 minutos como máximo): `git diff --stat` toca solo los archivos del change; la descripción trae la salida real del smoke; la spec tiene sus escenarios; no hay `.env` ni credenciales.
+6. **Si nadie revisó un PR que bloquea en 3 horas**, el dueño lo mergea con la evidencia pegada y avisa al grupo. (Plazo propuesto: ajustarlo entre los tres.)
 
 ### Checklist antes de `/opsx:apply` (revisión de artefactos)
 
@@ -89,13 +121,13 @@ git checkout -b feature/<nombre-del-change>
 
 | Etapa | Mariano | Facundo | Andrés |
 |---|---|---|---|
-| **0 · Preparación** | Copia las correcciones al repo, borra `openspec/changes/tp1`, hace los 4 commits de la fundación y **sube a `main`** | Espera el push, clona, crea su entorno y su base local (sección 4), abre OpenCode | Igual que Facundo |
-| **1 · Fundación** | **`01` fundacion-proyecto** | Prepara el entorno; **revisa los artefactos de `01`**; lee KB `04`, `05`, `06` | Prepara el entorno; lee KB `04`, `05`, `07`, `09` y el PDF de la consigna |
-| **2 · Modelos** | **`02` modelos-y-esquema** (el 30 %: es lo más cuidadoso) | Revisa los artefactos de `02` con lupa; lee KB `06` (US-003 a 011) y `07` | **`08` laboratorio-sin-bloqueo** (solo necesita `01`); revisa los artefactos de `02` |
+| **0 · Preparación** ✅ | Copia las correcciones al repo, borra `openspec/changes/tp1`, hace los 4 commits de la fundación y **sube a `main`** | Espera el push, clona, crea su entorno y su base local (sección 4), abre OpenCode | Igual que Facundo |
+| **1 · Fundación** ✅ | **`01` fundacion-proyecto** | Prepara el entorno; **revisa los artefactos de `01`**; lee KB `04`, `05`, `06` | Prepara el entorno; lee KB `04`, `05`, `07`, `09` y el PDF de la consigna |
+| **2 · Modelos** ✅ | **`02` modelos-y-esquema** (el 30 %: es lo más cuidadoso) | Revisa los artefactos de `02` con lupa; lee KB `06` (US-003 a 011) y `07` | **`08` laboratorio-sin-bloqueo** (solo necesita `01`); revisa los artefactos de `02` |
 | **3 · CRUD y seed** | `09` reiniciar-y-seed → `06` turnos-alta-transaccional | `03` duenios-y-ficha → `05` mascotas-y-paginacion | `04` practicas-catalogo; después prepara borradores de `.http` (sin commitear) |
 | **4 · Lecturas** | `07` turnos-lecturas-y-baja (+ captura la evidencia de consola) | Termina `05`; prepara el borrador del README en un archivo local | Revisa PRs de `06`, `07`; espera que estén todos mergeados |
 | **5 · Pruebas y README** | Revisa `10`; verifica `python reiniciar.py` sobre base vacía | `11` readme-y-entrega (cuando `10` esté mergeado) | **`10` pruebas-http-y-evidencia** |
-| **6 · Cierre** | Sigue el README al pie de la letra en un entorno limpio; checklist final; arma el zip | Corrige el README con lo que encuentre Mariano | Corre los 9 casos una vez más contra `main` |
+| **6 · Cierre** | Sigue el README al pie de la letra en un entorno limpio; checklist final; arma el zip con `git archive` (nunca comprimir la carpeta: arrastra el `.env`) | Corrige el README con lo que encuentre Mariano | Corre los 9 casos una vez más contra `main` |
 
 **Regla de las esperas**: nadie ejecuta `/opsx:propose` de un change con dependencias sin mergear. Mientras esperás: leer la KB, revisar artefactos y PRs de los demás, preparar borradores fuera de `openspec/`.
 
