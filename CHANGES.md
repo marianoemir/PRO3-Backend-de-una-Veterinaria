@@ -234,7 +234,7 @@
 
 ## [08] `laboratorio-sin-bloqueo`
 
-- **Estado**: `[ ]` pendiente · **Dueño**: Andrés · **Dependencias**: `01`
+- **Estado**: `[x]` archivado · **Dueño**: Andrés · **Dependencias**: `01`
 - **Scope** (`laboratorio/`):
   - `cliente.py`: el código **exacto** que entrega la cátedra (`consultar_stock(vacuna: str) -> int` con `time.sleep(1)`), **sin modificarlo**.
   - `service.py`: `await asyncio.to_thread(consultar_stock, vacuna)`.
