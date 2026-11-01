@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 class PracticaCreate(BaseModel):
     nombre: str
-    precio: Decimal = Field(gt=0)
+    precio: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
 
 
 class PracticaRead(BaseModel):
