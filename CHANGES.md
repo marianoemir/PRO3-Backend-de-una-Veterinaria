@@ -162,7 +162,7 @@
 
 ## [04] `practicas-catalogo`
 
-- **Estado**: `[x]` archivado ?? **Due??o**: Andr??s ?? **Dependencias**: `02`
+- **Estado**: `[x]` archivado · **Dueño**: Andrés · **Dependencias**: `02`
 - **Scope** (`practicas/schemas.py`, `service.py`, `router.py`):
   - DTO: `PracticaCreate` (sin `id`; precio mayor que cero validado **también** en el DTO, RN-04) y `PracticaRead`. Precio `Decimal`, serializado como string.
   - `POST /practicas/` → 201, 409 (nombre repetido por `IntegrityError`, sin `SELECT` previo), 422 (precio ≤ 0).
