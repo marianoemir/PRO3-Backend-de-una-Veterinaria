@@ -1,9 +1,9 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.core.config import settings
+from app.core.database import crear_fabrica, crear_motor
 from app.modules.duenios.router import router as duenios_router
 from app.modules.health.router import router as health_router
 from app.modules.laboratorio.router import router as laboratorio_router
@@ -14,8 +14,8 @@ from app.modules.turnos.router import router as turnos_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    engine = create_async_engine(settings.DATABASE_URL, echo=True)
-    session_local = async_sessionmaker(engine, expire_on_commit=False)
+    engine = crear_motor(settings.DATABASE_URL)
+    session_local = crear_fabrica(engine)
     app.state.engine = engine
     app.state.session_local = session_local
     yield
