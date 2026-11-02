@@ -217,7 +217,7 @@
 
 ## [07] `turnos-lecturas-y-baja`
 
-- **Estado**: `[ ]` pendiente · **Dueño**: Mariano · **Dependencias**: `06`
+- **Estado**: `[x]` archivado · **Dueño**: Mariano · **Dependencias**: `06`
 - **Scope**:
   - `GET /turnos/{id}`: una consulta base con `joinedload(Turno.mascota)` y `selectinload(Turno.practicas).joinedload(TurnoPractica.practica)`. 200 con turno, mascota y prácticas; 404. **Número fijo de consultas**: no crece con la cantidad de prácticas (RN-15).
   - `DELETE /turnos/{id}`: buscar, borrar y `commit`; la base borra `turno_practica` por `ON DELETE CASCADE` y `passive_deletes` evita que el ORM las toque. 204; 404.
