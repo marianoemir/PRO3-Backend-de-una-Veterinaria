@@ -140,7 +140,7 @@
 
 ## [03] `duenios-y-ficha`
 
-- **Estado**: `[ ]` pendiente · **Dueño**: Facundo · **Dependencias**: `02`
+- **Estado**: `[x]` archivado · **Dueño**: Facundo · **Dependencias**: `02`
 - **Scope** (`duenios/schemas.py`, `service.py`, `router.py`):
   - DTO: `DuenioCreate` (sin `id`), `DuenioUpdate` (`nombre`, `email` opcionales; DD-08), `DuenioRead` (con ficha), `FichaCreate` (teléfono y dirección obligatorios; DD-12), `FichaRead`, y una vista resumida de mascota **propia de este módulo** para `GET /duenios/{id}/mascotas`.
   - `POST /duenios/` → 201, 409 (email repetido: se escribe y se captura `IntegrityError` → `rollback()`; **sin `SELECT` previo**), 422.
