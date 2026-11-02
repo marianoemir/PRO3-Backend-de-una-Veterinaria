@@ -24,6 +24,10 @@ from app.modules.turnos.schemas import (
 CENTAVO = Decimal("0.01")
 
 
+class TurnoNoEncontrado(Exception):
+    """El turno no existe en la base."""
+
+
 class PracticaInexistente(Exception):
     """Alguna de las prácticas pedidas no está en el catálogo (RN-23: no se guarda nada)."""
 
@@ -134,3 +138,19 @@ async def crear_turno(session: AsyncSession, datos: TurnoCreate) -> TurnoRead:
         raise TurnoConflicto(_mensaje_conflicto(error)) from error
 
     return respuesta
+
+
+async def obtener_turno(session: AsyncSession, turno_id: int) -> TurnoRead:
+    from sqlalchemy.orm.exc import NoResultFound
+    try:
+        return await _leer_turno(session, turno_id)
+    except NoResultFound as exc:
+        raise TurnoNoEncontrado(f"turno {turno_id} no existe") from exc
+
+
+async def borrar_turno(session: AsyncSession, turno_id: int) -> None:
+    turno = await session.get(Turno, turno_id)
+    if turno is None:
+        raise TurnoNoEncontrado(f"turno {turno_id} no existe")
+    await session.delete(turno)
+    await session.commit()
