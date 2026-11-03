@@ -179,7 +179,7 @@
 
 ## [05] `mascotas-y-paginacion`
 
-- **Estado**: `[ ]` pendiente · **Dueño**: Facundo · **Dependencias**: `03`
+- **Estado**: `[x]` archivado · **Dueño**: Facundo · **Dependencias**: `03`
 - **Scope** (`mascotas/schemas.py`, `service.py`, `router.py`):
   - DTO: `MascotaCreate` (recibe `duenio_id`, sin `id`; `especie` texto libre no vacío), `MascotaRead` (con dueño resumido, vista propia de este módulo) y el envoltorio de paginación.
   - `POST /mascotas/` → 201, **409** si el dueño no existe (la FK lo rechaza; sin `SELECT` previo), 422.
