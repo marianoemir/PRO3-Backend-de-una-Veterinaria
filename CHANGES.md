@@ -1,4 +1,4 @@
-# CHANGES — Secuencia de Implementación
+﻿# CHANGES — Secuencia de Implementación
 
 > Índice canónico de los changes del proyecto **PRO3 — Backend de una Veterinaria**.
 > **Revisión 2 (31/10/2026)**: se reemplazó el roadmap de 19 changes por **11 changes** (cada uno con un solo dueño). Nada estaba archivado todavía, así que no se perdió trabajo.
@@ -267,7 +267,7 @@
 
 ## [10] `pruebas-http-y-evidencia`
 
-- **Estado**: `[ ]` pendiente · **Dueño**: Andrés · **Dependencias**: `03`, `04`, `05`, `06`, `07`, `08`, `09`
+- **Estado**: `[x]` archivado · **Dueño**: Andrés · **Dependencias**: `03`, `04`, `05`, `06`, `07`, `08`, `09`
 - **Scope** (`test/`): un archivo `.http` por caso, cada uno con la respuesta esperada en un comentario, para correr después de `python reiniciar.py`.
   - `caso_C-01.http` `/duenios/abc` → 422 · `caso_C-02.http` email y nombre repetidos → 409 con mensaje propio · `caso_C-03.http` segunda ficha → 409 · `caso_C-04.http` mascota con dueño inexistente → 409; turno con práctica inexistente → 409 y nada guardado · `caso_C-05.http` borrar dueño con mascotas → 409; borrar turno → 204 y sin prácticas · `caso_C-06.http` turno válido con dos prácticas → 201 con precios y total · `caso_C-07.http` detalle con 1 y con 3 prácticas → misma cantidad de consultas · `caso_C-08.sql` (+ `.http` con el precio antes y después) · `caso_C-09.http` tres consultas al laboratorio y `/health/live`.
   - `test/evidencia_C-07.txt`: fragmento de consola con las consultas del detalle con 1 y con 3 prácticas. **Entregable obligatorio.**

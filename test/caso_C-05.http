@@ -1,0 +1,12 @@
+### Caso C-05 - Borrar dueño con mascotas
+# Precondición: python reiniciar.py
+# Respuesta esperada: 409 {"detail": "No se puede borrar el dueño: tiene mascotas o ficha asociada"}
+@baseUrl = http://localhost:8000
+
+DELETE {{baseUrl}}/duenios/1
+
+### Caso C-05 - Borrar turno existente
+# Precondición: python reiniciar.py
+# Respuesta esperada: 204 No Content
+# Verificación SQL: SELECT count(*) FROM turno_practica WHERE turno_id = 1; debe ser 0.
+DELETE {{baseUrl}}/turnos/1
