@@ -1,0 +1,23 @@
+### Caso C-02 - Email de dueño repetido
+# Precondición: python reiniciar.py
+# Respuesta esperada: 409 {"detail": "Ya existe un dueño con ese email"}
+@baseUrl = http://localhost:8000
+
+POST {{baseUrl}}/duenios/
+Content-Type: application/json
+
+{
+  "nombre": "Otro Dueño",
+  "email": "ana.gomez@ejemplo.com"
+}
+
+### Caso C-02 - Nombre de práctica repetido
+# Precondición: python reiniciar.py
+# Respuesta esperada: 409 {"detail": "Ya existe una práctica con ese nombre"}
+POST {{baseUrl}}/practicas/
+Content-Type: application/json
+
+{
+  "nombre": "Consulta",
+  "precio": "100.00"
+}

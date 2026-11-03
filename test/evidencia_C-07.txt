@@ -1,0 +1,16 @@
+# Caso C-07 - Evidencia de consola (echo=True)
+# Turno con una práctica (id=2): 2 SELECT
+2026-11-02 21:58:47,618 INFO sqlalchemy.engine.Engine SELECT turno.id, turno.mascota_id, turno.fecha, turno.motivo, turno.total, mascota_1.id AS id_1, mascota_1.nombre, mascota_1.especie, mascota_1.duenio_id
+FROM turno LEFT OUTER JOIN mascota AS mascota_1 ON mascota_1.id = turno.mascota_id
+WHERE turno.id = $1::INTEGER
+2026-11-02 21:58:47,620 INFO sqlalchemy.engine.Engine SELECT turno_practica.turno_id, turno_practica.practica_id, turno_practica.precio_unitario, practica_1.id, practica_1.nombre, practica_1.precio
+FROM turno_practica LEFT OUTER JOIN practica AS practica_1 ON practica_1.id = turno_practica.practica_id
+WHERE turno_practica.turno_id IN ($1::INTEGER)
+
+# Turno con tres prácticas (id=3): 2 SELECT (misma cantidad)
+2026-11-02 21:58:47,705 INFO sqlalchemy.engine.Engine SELECT turno.id, turno.mascota_id, turno.fecha, turno.motivo, turno.total, mascota_1.id AS id_1, mascota_1.nombre, mascota_1.especie, mascota_1.duenio_id
+FROM turno LEFT OUTER JOIN mascota AS mascota_1 ON mascota_1.id = turno.mascota_id
+WHERE turno.id = $1::INTEGER
+2026-11-02 21:58:47,706 INFO sqlalchemy.engine.Engine SELECT turno_practica.turno_id, turno_practica.practica_id, turno_practica.precio_unitario, practica_1.id, practica_1.nombre, practica_1.precio
+FROM turno_practica LEFT OUTER JOIN practica AS practica_1 ON practica_1.id = turno_practica.practica_id
+WHERE turno_practica.turno_id IN ($1::INTEGER)

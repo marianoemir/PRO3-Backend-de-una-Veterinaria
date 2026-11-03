@@ -1,0 +1,7 @@
+### Caso C-01 - Parámetro de ruta no entero
+# Precondición: python reiniciar.py
+# Respuesta esperada: 422 Unprocessable Entity (validación de FastAPI, el handler no se ejecuta)
+@baseUrl = http://localhost:8000
+
+GET {{baseUrl}}/duenios/abc
+Accept: application/json

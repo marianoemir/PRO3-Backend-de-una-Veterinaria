@@ -1,0 +1,24 @@
+### Caso C-03 - Segunda ficha para el mismo dueño
+# Precondición: python reiniciar.py
+# El dueño 1 ya tiene ficha (seed). La primera petición (si el dueño no tuviera ficha) respondería 201;
+# con el seed responde 409. La segunda petición debe responder 409.
+# Respuesta esperada (segunda): 409 {"detail": "El dueño ya tiene una ficha registrada"}
+@baseUrl = http://localhost:8000
+
+POST {{baseUrl}}/duenios/1/ficha
+Content-Type: application/json
+
+{
+  "telefono": "1199990000",
+  "direccion": "Calle Falsa 123"
+}
+
+###
+
+POST {{baseUrl}}/duenios/1/ficha
+Content-Type: application/json
+
+{
+  "telefono": "1199990000",
+  "direccion": "Calle Falsa 123"
+}

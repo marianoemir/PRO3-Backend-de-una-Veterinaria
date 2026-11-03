@@ -1,0 +1,43 @@
+### Caso C-07 - Turno con una práctica
+# Precondición: python reiniciar.py
+# Respuesta esperada: 201 (id=2) y luego GET 200 con 1 práctica.
+@baseUrl = http://localhost:8000
+
+POST {{baseUrl}}/turnos/
+Content-Type: application/json
+
+{
+  "mascota_id": 1,
+  "fecha": "2026-11-12T10:30:00-03:00",
+  "motivo": "Control",
+  "practicas": [
+    { "practica_id": 2 }
+  ]
+}
+
+### Caso C-07 - Turno con tres prácticas
+# Precondición: python reiniciar.py
+# Respuesta esperada: 201 (id=3) y luego GET 200 con 3 prácticas.
+POST {{baseUrl}}/turnos/
+Content-Type: application/json
+
+{
+  "mascota_id": 1,
+  "fecha": "2026-11-12T10:30:00-03:00",
+  "motivo": "Control",
+  "practicas": [
+    { "practica_id": 1 },
+    { "practica_id": 2 },
+    { "practica_id": 3 }
+  ]
+}
+
+### Caso C-07 - Detalle del turno con una práctica
+# Respuesta esperada: 200 con mascota y 1 práctica.
+# Evidencia de consola (echo=True): 2 SELECT.
+GET {{baseUrl}}/turnos/2
+
+### Caso C-07 - Detalle del turno con tres prácticas
+# Respuesta esperada: 200 con mascota y 3 prácticas.
+# Evidencia de consola (echo=True): 2 SELECT (misma cantidad que con una práctica).
+GET {{baseUrl}}/turnos/3

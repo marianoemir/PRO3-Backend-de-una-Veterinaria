@@ -1,0 +1,26 @@
+### Caso C-09 - Primera consulta al laboratorio
+# Precondición: python reiniciar.py
+# Respuesta esperada: {"vacuna": "rabia", "stock": 15} (stock = 10 + len(vacuna))
+@baseUrl = http://localhost:8000
+
+GET {{baseUrl}}/laboratorio/stock/rabia
+
+### Caso C-09 - Endpoint de salud en el medio
+# Respuesta esperada: {"estado": "vivo"} de inmediato.
+GET {{baseUrl}}/health/live
+
+### Caso C-09 - Segunda consulta al laboratorio
+# Respuesta esperada: {"vacuna": "parvo", "stock": 15}
+GET {{baseUrl}}/laboratorio/stock/parvo
+
+### Caso C-09 - Tercera consulta al laboratorio
+# Respuesta esperada: {"vacuna": "moquillo", "stock": 18}
+GET {{baseUrl}}/laboratorio/stock/moquillo
+
+# Nota de concurrencia: REST Client ejecuta secuencialmente. Para medir concurrencia real,
+# lanzar en paralelo (PowerShell):
+#   Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/rabia } | Out-Null
+#   Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/parvo } | Out-Null
+#   Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/moquillo } | Out-Null
+#   Measure-Command { curl.exe -s http://localhost:8000/health/live }
+# El endpoint de salud debe responder en ~0 ms mientras las del laboratorio tardan ~1000 ms.

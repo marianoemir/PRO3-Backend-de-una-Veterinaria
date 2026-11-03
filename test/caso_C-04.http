@@ -1,0 +1,29 @@
+### Caso C-04 - Mascota con dueño inexistente
+# Precondición: python reiniciar.py
+# Respuesta esperada: 409 {"detail": "No existe un dueño con ese id"}
+@baseUrl = http://localhost:8000
+
+POST {{baseUrl}}/mascotas/
+Content-Type: application/json
+
+{
+  "nombre": "Fantasma",
+  "especie": "perro",
+  "duenio_id": 999
+}
+
+### Caso C-04 - Turno con práctica inexistente
+# Precondición: python reiniciar.py
+# Respuesta esperada: 409 {"detail": "no se pudo registrar el turno: la(s) práctica(s) 999 no existe(n) en el catálogo"}
+# Verificación SQL: SELECT count(*) FROM turno; debe quedar sin cambios (1 fila).
+POST {{baseUrl}}/turnos/
+Content-Type: application/json
+
+{
+  "mascota_id": 1,
+  "fecha": "2026-11-12T10:30:00-03:00",
+  "motivo": "Prueba",
+  "practicas": [
+    { "practica_id": 999 }
+  ]
+}

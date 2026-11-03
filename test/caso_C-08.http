@@ -1,0 +1,11 @@
+### Caso C-08 - Lectura del catálogo (antes del intento)
+# Precondición: python reiniciar.py
+# Respuesta esperada: práctica 1 con precio "15000.00".
+@baseUrl = http://localhost:8000
+
+GET {{baseUrl}}/practicas/
+
+### Caso C-08 - Lectura del catálogo (después del intento fallido)
+# Precondición: haber ejecutado test/caso_C-08.sql (que falla por CHECK)
+# Respuesta esperada: práctica 1 sigue con precio "15000.00".
+GET {{baseUrl}}/practicas/
