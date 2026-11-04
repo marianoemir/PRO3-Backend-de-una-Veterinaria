@@ -283,7 +283,7 @@
 
 ## [11] `readme-y-entrega`
 
-- **Estado**: `[ ]` pendiente · **Dueño**: Facundo · **Dependencias**: `10`
+- **Estado**: `[x]` archivado · **Dueño**: Facundo · **Dependencias**: `10`
 - **Scope** (`README.md`):
   - Pasos desde cero: requisitos (Python 3.12+, PostgreSQL 16+), entorno virtual, `pip install -r requirements.txt`, copiar `env.example` a `.env`, crear la base, `python reiniciar.py`, `uvicorn app.main:app`.
   - Tabla de endpoints y códigos; cómo correr los `.http` y el `.sql` del caso C-08.

@@ -22,5 +22,6 @@ GET {{baseUrl}}/laboratorio/stock/moquillo
 #   Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/rabia } | Out-Null
 #   Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/parvo } | Out-Null
 #   Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/moquillo } | Out-Null
+#   Start-Sleep -Milliseconds 300
 #   Measure-Command { curl.exe -s http://localhost:8000/health/live }
 # El endpoint de salud debe responder en ~0 ms mientras las del laboratorio tardan ~1000 ms.
