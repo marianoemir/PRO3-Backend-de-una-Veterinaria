@@ -9,7 +9,7 @@ Construida con **FastAPI + SQLModel (async) + PostgreSQL 16+**. Solo backend: si
 
 | Requisito | Versión / detalle |
 |---|---|
-| Python | 3.12 o superior (`python --version` o `python3 --version`) |
+| Python | 3.12 o superior (`python --version` o `python3 --version`); en Windows, si `python` no responde, usá `py -3` |
 | PostgreSQL | 16 o superior, con **pgAdmin** (viene con el instalador) |
 | Git | opcional, solo para clonar |
 
@@ -130,7 +130,7 @@ python reiniciar.py
 
 > ⚠️ **`reiniciar.py` borra todas las tablas y sus datos** de la base apuntada por `DATABASE_URL`, y luego las recrea con el seed mínimo. No lo apuntes a una base con datos que quieras conservar.
 
-Salida esperada (los conteos son fijos, el seed es reproducible):
+Salida esperada (la consola también imprime líneas INFO de SQLAlchemy por echo=True; lo importante es el resumen final):
 
 ```text
 Reiniciando postgresql+asyncpg://usuario:***@localhost:5432/veterinaria (se borran todas las tablas y sus datos)
@@ -172,17 +172,17 @@ Solo existen estas rutas (no se agregaron endpoints fuera de la consigna).
 | POST | `/duenios/` | `DuenioCreate` | dueño creado | 201, 409, 422 |
 | GET | `/duenios/{id}` | — | dueño con su ficha | 200, 404, 422 |
 | PATCH | `/duenios/{id}` | `DuenioUpdate` | dueño con su ficha | 200, 404, 409, 422 |
-| DELETE | `/duenios/{id}` | — | — | 204, 404, 409 |
-| POST | `/duenios/{id}/ficha` | `FichaCreate` | ficha creada | 201, 404, 409 |
-| GET | `/duenios/{id}/mascotas` | — | lista de mascotas | 200, 404 |
+| DELETE | `/duenios/{id}` | — | — | 204, 404, 409, 422 |
+| POST | `/duenios/{id}/ficha` | `FichaCreate` | ficha creada | 201, 404, 409, 422 |
+| GET | `/duenios/{id}/mascotas` | — | lista de mascotas | 200, 404, 422 |
 | POST | `/mascotas/` | `MascotaCreate` | mascota creada | 201, 409, 422 |
 | GET | `/mascotas/?page=&size=` | — | envoltorio paginado | 200, 422 |
-| GET | `/mascotas/{id}` | — | mascota con su dueño | 200, 404 |
+| GET | `/mascotas/{id}` | — | mascota con su dueño | 200, 404, 422 |
 | POST | `/practicas/` | `PracticaCreate` | práctica creada | 201, 409, 422 |
 | GET | `/practicas/` | — | catálogo de prácticas | 200 |
 | POST | `/turnos/` | `TurnoCreate` | turno con mascota y prácticas | 201, 409, 422 |
-| GET | `/turnos/{id}` | — | turno con mascota y prácticas | 200, 404 |
-| DELETE | `/turnos/{id}` | — | — | 204, 404 |
+| GET | `/turnos/{id}` | — | turno con mascota y prácticas | 200, 404, 422 |
+| DELETE | `/turnos/{id}` | — | — | 204, 404, 422 |
 | GET | `/laboratorio/stock/{vacuna}` | — | `{"vacuna": ..., "stock": ...}` | 200 |
 
 Códigos: **201** al crear, **204** al borrar, **404** si el recurso no existe, **409** si la base rechaza la escritura (email o nombre repetido, FK inexistente, baja con dependencias), **422** si el cuerpo o los parámetros no cumplen el contrato, **503** si la base no está disponible en `/health/ready`.
@@ -233,7 +233,7 @@ Respuesta `201` (la fecha sale en UTC):
 Seis tablas: `duenio`, `ficha_duenio`, `mascota`, `practica`, `turno` y `turno_practica`. Las garantías (UNIQUE, CHECK, FK) las hace cumplir PostgreSQL, no consultas previas desde la aplicación.
 
 **¿Por qué `turno_practica.turno_id` no necesita índice propio?**
-La clave primaria compuesta `(turno_id, practica_id)` ya crea un índice B-tree con `turno_id` como primera columna, que PostgreSQL usa para buscar por turno; `practica_id` es la segunda columna, por eso sí lleva índice propio.
+La clave primaria compuesta `(turno_id, practica_id)` ya crea un índice B-tree con `turno_id` como primera columna, que PostgreSQL usa para buscar por turno; `practica_id` no es la primera columna de esa clave, así que no se beneficia de ese índice y por eso sí lleva uno propio (`ix_turno_practica_practica_id`).
 
 ---
 
@@ -271,6 +271,7 @@ Se usan con la extensión **[REST Client](https://marketplace.visualstudio.com/i
 Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/rabia } | Out-Null
 Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/parvo } | Out-Null
 Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/moquillo } | Out-Null
+Start-Sleep -Milliseconds 300
 Measure-Command { curl.exe -s http://localhost:8000/health/live }
 ```
 
