@@ -235,6 +235,20 @@ Seis tablas: `duenio`, `ficha_duenio`, `mascota`, `practica`, `turno` y `turno_p
 **¿Por qué `turno_practica.turno_id` no necesita índice propio?**
 La clave primaria compuesta `(turno_id, practica_id)` ya crea un índice B-tree con `turno_id` como primera columna, que PostgreSQL usa para buscar por turno; `practica_id` no es la primera columna de esa clave, así que no se beneficia de ese índice y por eso sí lleva uno propio (`ix_turno_practica_practica_id`).
 
+**Lado de cada clave foránea y regla de borrado**
+
+| FK | Va en | Relación | Al borrar el padre | Por qué |
+|---|---|---|---|---|
+| `ficha_duenio.duenio_id` → `duenio` | `ficha_duenio` (con `UNIQUE`) | 1:1 de dependencia | `NO ACTION` | La ficha no existe sin el dueño; el `UNIQUE` limita a una ficha por dueño. La consigna no define el borrado (DD-13), así que no se inventa un `CASCADE`. |
+| `mascota.duenio_id` → `duenio` | `mascota` (lado "muchos") | 1:N, agregación | `RESTRICT` | RN-08: no se borra un dueño con mascotas; la base lo rechaza sin consulta previa. |
+| `turno.mascota_id` → `mascota` | `turno` (lado "muchos") | 1:N, asociación | `NO ACTION` | La consigna no lo define y no hay `DELETE /mascotas/{id}`; no se destruye historia clínica por accidente. |
+| `turno_practica.turno_id` → `turno` | `turno_practica` (intermedia) | composición | `CASCADE` | RN-09: al borrar un turno se borran sus prácticas, en la misma transacción. |
+| `turno_practica.practica_id` → `practica` | `turno_practica` (intermedia) | M:N con datos (`precio_unitario`) | `NO ACTION` | Un `CASCADE` borraría el histórico de turnos ya cobrados. |
+
+**Índices.** PostgreSQL no indexa las claves foráneas automáticamente. `ix_mascota_duenio_id` evita un recorrido completo de `mascota` al borrar un dueño (`RESTRICT`) y en `GET /duenios/{id}/mascotas`. `ix_turno_mascota_id` cumple la misma función en `turno`. `ix_turno_practica_practica_id` se explica arriba.
+
+Justificación completa: `openspec/changes/archive/2026-10-31-modelos-y-esquema/design.md`, secciones 2 y 3.
+
 ---
 
 ## Casos de prueba (`test/`)
