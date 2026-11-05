@@ -305,7 +305,7 @@ Después de ejecutarlo, `test/caso_C-08.http` confirma que la práctica 1 sigue 
 | DD-09 | El email no se normaliza: se guarda tal cual llega. | `A@x.com` y `a@x.com` son distintos para el `UNIQUE` de PostgreSQL. |
 | DD-10 | `GET /duenios/{id}/mascotas` devuelve una lista simple. | `[]` si el dueño no tiene mascotas (200); dueño inexistente → 404; el envoltorio paginado es solo para `GET /mascotas/`. |
 | DD-11 | El detalle de turno no incluye id de fila de `turno_practica`. | Cada práctica trae `practica_id`, `nombre` y `precio_unitario`; `turno_practica` no tiene columna `id`. |
-| DD-12 | Validaciones mínimas en los DTO. | `especie` texto libre no vacío, `motivo` obligatorio, ficha con `telefono` y `direccion`; no se valida fecha pasada, turnos duplicados ni formato de email. |
+| DD-12 | Validaciones mínimas en los DTO. | Los textos obligatorios (`nombre`, `email`, `especie`, `motivo`, `telefono`, `direccion`) no pueden ser vacíos; no se valida fecha pasada, turnos duplicados ni formato de email. |
 | DD-13 | `ON DELETE` no especificado queda en el default `NO ACTION` (ficha, turno→mascota, práctica en turno). | No se agregó `CASCADE` donde la consigna no lo pide; la base rechaza el borrado. |
 | DD-14 | `GET /health/ready` informa el estado de la base. | 200 `{"estado": "listo", "base": "ok"}` / 503 `{"estado": "no_disponible", "base": "error"}`. |
 | DD-15 | Paginación y organización de `test/`. | `page` y `size` por query string, listados ordenados por `id`, un `.http` por caso más `caso_C-08.sql`, base `veterinaria` en `env.example`. |
@@ -314,7 +314,7 @@ Después de ejecutarlo, `test/caso_C-08.http` confirma que la práctica 1 sigue 
 
 - **`page` es 1-based** en `GET /mascotas/` (`Query(1, ge=1)`). Se deriva del ejemplo del envoltorio (`"page": 1`) y de "la primera página"; `page=0` o negativo responde **422**.
 - **Un dueño con ficha y sin mascotas tampoco se puede borrar**: `DELETE /duenios/{id}` responde **409** porque `ficha_duenio.duenio_id` quedó en `NO ACTION` (DD-13 / IN-03). No se borra la ficha antes para habilitar la baja: sería inventar una cascada que la consigna no autoriza.
-- **`PATCH /duenios/{id}` con `null` explícito responde 409**: el DTO no prohíbe `null` (DD-12) y la base rechaza el `NOT NULL` con `IntegrityError` → `rollback()` → 409.
+- **`PATCH /duenios/{id}` con `null` explícito responde 422**: `nombre` y `email` son opcionales (se pueden omitir) pero no pueden enviarse como `null`, porque las columnas son `NOT NULL`; lo rechaza el DTO antes de llegar a la base.
 
 ---
 
@@ -324,6 +324,8 @@ Después de ejecutarlo, `test/caso_C-08.http` confirma que la práctica 1 sigue 
 |---|---|---|
 | `FATAL: DATABASE_URL no está definida. Copiá env.example a .env y configurá la conexión.` | No existe `.env` o le falta `DATABASE_URL`. El arranque aborta con código 1. | Copiá `env.example` a `.env` (paso 4) y completá la URL. |
 | `ERROR: no se pudo reiniciar la base ...` | La base `veterinaria` no existe o las credenciales de `DATABASE_URL` son incorrectas. El script revierte la transacción y sale con código 2. | Creá la base desde pgAdmin (paso 5) y revisá usuario, clave y puerto en `.env`. |
+| `python -m venv .venv` no muestra nada y después `Activate.ps1` dice que no se reconoce (no existe la carpeta `.venv`) | En Windows, el primer `python` del `PATH` puede ser un alias del instalador que no hace nada y falla en silencio; las dependencias terminan instalándose en el Python global. | Usá el lanzador con versión explícita: `py -3.13 -m venv .venv` (o `py -3.12`). Comprobá que `Test-Path .\.venv\Scripts\Activate.ps1` dé `True` y que `where.exe python` devuelva primero el de `.venv`. |
+| `[Errno 10048] ... solo se permite un uso de cada dirección de socket` | El puerto 8000 ya está ocupado por otra API que sigue corriendo. | Frená la otra instancia con Ctrl+C, o levantá esta en otro puerto: `uvicorn app.main:app --port 8001`. |
 | `Reiniciando ... (se borran todas las tablas y sus datos)` | Aviso normal de `reiniciar.py`: destruye el contenido de la base apuntada. | Confirmá que `DATABASE_URL` apunta a la base de desarrollo, no a una con datos reales. |
 
 ---
@@ -331,7 +333,7 @@ Después de ejecutarlo, `test/caso_C-08.http` confirma que la práctica 1 sigue 
 ## Checklist de entrega
 
 - [x] Código fuente completo en `app/` (seis módulos: `health`, `duenios`, `mascotas`, `practicas`, `turnos`, `laboratorio`).
-- [x] `requirements.txt` con las dependencias y versiones mínimas.
+- [x] `requirements.txt` con las dependencias y sus versiones fijadas.
 - [x] `env.example` sin secretos (`.env` no versionado).
 - [x] `reiniciar.py` que recrea el esquema y carga el seed.
 - [x] `test/` con los nueve casos (`caso_C-01.http` … `caso_C-09.http`), `caso_C-08.sql` y `evidencia_C-07.txt`.

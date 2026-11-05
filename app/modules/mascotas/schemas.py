@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class MascotaCreate(BaseModel):
     """Alta de mascota: sin `id`, lo genera la base (RN-10)."""
 
-    nombre: str
+    nombre: str = Field(min_length=1)
     especie: str = Field(min_length=1)
     duenio_id: int
 

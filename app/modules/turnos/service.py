@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm.exc import NoResultFound
 
 # Estos imports no se usan por su nombre acá: registran los mappers del grafo que este
 # endpoint recorre (`Turno.mascota`, `Mascota.duenio`, `TurnoPractica.practica`). Sin ellos, la
@@ -141,7 +142,6 @@ async def crear_turno(session: AsyncSession, datos: TurnoCreate) -> TurnoRead:
 
 
 async def obtener_turno(session: AsyncSession, turno_id: int) -> TurnoRead:
-    from sqlalchemy.orm.exc import NoResultFound
     try:
         return await _leer_turno(session, turno_id)
     except NoResultFound as exc:

@@ -15,7 +15,7 @@ class TurnoCreate(BaseModel):
 
     mascota_id: int
     fecha: datetime
-    motivo: str
+    motivo: str = Field(min_length=1)
     practicas: list[TurnoPracticaCreate] = Field(min_length=1)
 
 
