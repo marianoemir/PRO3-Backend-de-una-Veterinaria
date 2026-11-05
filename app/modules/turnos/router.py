@@ -28,23 +28,23 @@ async def crear_turno(
         ) from error
 
 
-@router.get("/{id}", response_model=TurnoRead)
+@router.get("/{turno_id}", response_model=TurnoRead)
 async def leer_turno(
-    id: int,
+    turno_id: int,
     session: AsyncSession = Depends(get_session),
 ) -> TurnoRead:
     try:
-        return await service.obtener_turno(session, id)
+        return await service.obtener_turno(session, turno_id)
     except service.TurnoNoEncontrado as error:
         raise HTTPException(status_code=404, detail=str(error)) from error
 
 
-@router.delete("/{id}", status_code=204)
+@router.delete("/{turno_id}", status_code=204)
 async def borrar_turno(
-    id: int,
+    turno_id: int,
     session: AsyncSession = Depends(get_session),
 ) -> None:
     try:
-        await service.borrar_turno(session, id)
+        await service.borrar_turno(session, turno_id)
     except service.TurnoNoEncontrado as error:
         raise HTTPException(status_code=404, detail=str(error)) from error

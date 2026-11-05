@@ -1,16 +1,23 @@
 # Caso C-07 - Evidencia de consola (echo=True)
+# Generada el 2026-11-05 con la versión final, tras `python reiniciar.py` y los dos POST de caso_C-07.http.
 # Turno con una práctica (id=2): 2 SELECT
-2026-11-02 21:58:47,618 INFO sqlalchemy.engine.Engine SELECT turno.id, turno.mascota_id, turno.fecha, turno.motivo, turno.total, mascota_1.id AS id_1, mascota_1.nombre, mascota_1.especie, mascota_1.duenio_id
+2026-11-05 08:54:03,150 INFO sqlalchemy.engine.Engine SELECT turno.id, turno.mascota_id, turno.fecha, turno.motivo, turno.total, mascota_1.id AS id_1, mascota_1.nombre, mascota_1.especie, mascota_1.duenio_id
 FROM turno LEFT OUTER JOIN mascota AS mascota_1 ON mascota_1.id = turno.mascota_id
 WHERE turno.id = $1::INTEGER
-2026-11-02 21:58:47,620 INFO sqlalchemy.engine.Engine SELECT turno_practica.turno_id, turno_practica.practica_id, turno_practica.precio_unitario, practica_1.id, practica_1.nombre, practica_1.precio
+2026-11-05 08:54:03,163 INFO sqlalchemy.engine.Engine [generated in 0.01332s] (2,)
+2026-11-05 08:54:03,172 INFO sqlalchemy.engine.Engine SELECT turno_practica.turno_id, turno_practica.practica_id, turno_practica.precio_unitario, practica_1.id, practica_1.nombre, practica_1.precio
 FROM turno_practica LEFT OUTER JOIN practica AS practica_1 ON practica_1.id = turno_practica.practica_id
 WHERE turno_practica.turno_id IN ($1::INTEGER)
+2026-11-05 08:54:03,172 INFO sqlalchemy.engine.Engine [generated in 0.00023s] (2,)
+INFO:     127.0.0.1:42372 - "GET /turnos/2 HTTP/1.1" 200 OK
 
 # Turno con tres prácticas (id=3): 2 SELECT (misma cantidad)
-2026-11-02 21:58:47,705 INFO sqlalchemy.engine.Engine SELECT turno.id, turno.mascota_id, turno.fecha, turno.motivo, turno.total, mascota_1.id AS id_1, mascota_1.nombre, mascota_1.especie, mascota_1.duenio_id
+2026-11-05 08:54:14,807 INFO sqlalchemy.engine.Engine SELECT turno.id, turno.mascota_id, turno.fecha, turno.motivo, turno.total, mascota_1.id AS id_1, mascota_1.nombre, mascota_1.especie, mascota_1.duenio_id
 FROM turno LEFT OUTER JOIN mascota AS mascota_1 ON mascota_1.id = turno.mascota_id
 WHERE turno.id = $1::INTEGER
-2026-11-02 21:58:47,706 INFO sqlalchemy.engine.Engine SELECT turno_practica.turno_id, turno_practica.practica_id, turno_practica.precio_unitario, practica_1.id, practica_1.nombre, practica_1.precio
+2026-11-05 08:54:14,807 INFO sqlalchemy.engine.Engine [cached since 11.66s ago] (3,)
+2026-11-05 08:54:14,809 INFO sqlalchemy.engine.Engine SELECT turno_practica.turno_id, turno_practica.practica_id, turno_practica.precio_unitario, practica_1.id, practica_1.nombre, practica_1.precio
 FROM turno_practica LEFT OUTER JOIN practica AS practica_1 ON practica_1.id = turno_practica.practica_id
 WHERE turno_practica.turno_id IN ($1::INTEGER)
+2026-11-05 08:54:14,810 INFO sqlalchemy.engine.Engine [cached since 11.64s ago] (3,)
+INFO:     127.0.0.1:42375 - "GET /turnos/3 HTTP/1.1" 200 OK

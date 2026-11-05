@@ -2,7 +2,7 @@
 
 **Equipo**: Mariano · Facundo · Andrés
 **Estado al**: 01/11/2026 · changes `01` y `02` **mergeados** en `main`; del `03` al `11` pendientes.
-**Fecha y hora de entrega**: `____________` ← completar entre los tres y trabajar hacia atrás desde ahí.
+**Fecha y hora de entrega**: Sin fecha fijada por la cátedra al 2026-11-05 (a confirmar con el profesor)
 **Fuente de verdad**: `docs/MiniTP_Cap1a4_Consigna.pdf`. Roadmap y detalle de cada change: `CHANGES.md`. Reglas del agente: `AGENTS.md` / `CLAUDE.md`.
 
 ---

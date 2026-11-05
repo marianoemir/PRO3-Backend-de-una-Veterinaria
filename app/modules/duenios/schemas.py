@@ -1,11 +1,11 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class DuenioCreate(BaseModel):
     """Alta de dueño: sin `id`, la base lo genera (RN-10)."""
 
-    nombre: str
-    email: str
+    nombre: str = Field(min_length=1)
+    email: str = Field(min_length=1)
 
 
 class FichaRead(BaseModel):
@@ -20,8 +20,8 @@ class FichaRead(BaseModel):
 class FichaCreate(BaseModel):
     """Alta de ficha: `telefono` y `direccion` obligatorios (DD-12)."""
 
-    telefono: str
-    direccion: str
+    telefono: str = Field(min_length=1)
+    direccion: str = Field(min_length=1)
 
 
 class DuenioRead(BaseModel):
@@ -36,8 +36,16 @@ class DuenioRead(BaseModel):
 class DuenioUpdate(BaseModel):
     """PATCH parcial: solo se aplican los campos enviados (RN-11, DD-08)."""
 
-    nombre: str | None = None
-    email: str | None = None
+    nombre: str | None = Field(default=None, min_length=1)
+    email: str | None = Field(default=None, min_length=1)
+
+    @field_validator("nombre", "email")
+    @classmethod
+    def _no_null_explicito(cls, valor: str | None) -> str | None:
+        """Omitir el campo es válido; enviarlo como `null` no: ambas columnas son NOT NULL."""
+        if valor is None:
+            raise ValueError("el campo no puede ser null; omitilo para no modificarlo")
+        return valor
 
 
 class MascotaResumenRead(BaseModel):

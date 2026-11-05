@@ -10,3 +10,8 @@ DELETE {{baseUrl}}/duenios/1
 # Respuesta esperada: 204 No Content
 # Verificación SQL: SELECT count(*) FROM turno_practica WHERE turno_id = 1; debe ser 0.
 DELETE {{baseUrl}}/turnos/1
+
+### Caso C-05 - El turno borrado ya no existe
+# Precondición: haber ejecutado el DELETE anterior
+# Respuesta esperada: 404 (y sus prácticas se borraron por ON DELETE CASCADE)
+GET {{baseUrl}}/turnos/1
