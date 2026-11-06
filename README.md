@@ -35,19 +35,53 @@ Elegí **una** terminal y seguí **solo su guía**, de arriba abajo, sin saltear
 
 Cada bloque de código se pega **entero y tal cual**, salvo donde el texto diga que tenés que cambiar algo (tu clave de PostgreSQL). Los comandos se ejecutan **desde la raíz del repositorio**, que es la carpeta que se crea al clonar.
 
-### Paso 0 — Crear la base de datos `veterinaria` (una sola vez, igual en todos los sistemas)
+### Paso 0 — Preparar PostgreSQL y crear la base `veterinaria` (una sola vez)
 
-`reiniciar.py` **no crea la base**: solo borra y recrea las **tablas** dentro de una base que ya exista. Por eso se crea primero, con **pgAdmin** (viene con el instalador de PostgreSQL y no requiere `psql` en el `PATH`):
+`reiniciar.py` **no crea la base**: solo borra y recrea las **tablas** dentro de una base que ya exista. Por eso la base se crea antes de cualquier otro paso. Este paso es igual sin importar qué terminal uses después.
 
-1. Abrí pgAdmin y conectate a tu servidor local (`localhost:5432`; te pide la clave de `postgres`, la que elegiste al instalar PostgreSQL).
-2. Clic derecho sobre **Databases** → **Create** → **Database…**
-3. En **Database** escribí `veterinaria` y presioná **Save**.
+**0.a — Tener PostgreSQL instalado y andando.** Hace falta PostgreSQL 16 o superior. Si no lo tenés, descargá el instalador desde <https://www.postgresql.org/download/> (en Windows, el instalador gráfico). Durante la instalación:
 
-**Alternativa con `psql`** (solo si lo tenés en el `PATH`; el comando es el mismo en cualquier terminal):
+- dejá tildado **pgAdmin 4** (es la herramienta con ventanas para manejar la base);
+- elegí una **contraseña** para el usuario `postgres` y **anotala**: es la que después va en el archivo `.env`;
+- dejá el puerto **5432**.
 
-```text
-psql -U postgres -c "CREATE DATABASE veterinaria;"
+Para comprobar que el servidor está andando en Windows: Inicio → escribí `services.msc` → Enter, y buscá el servicio `postgresql-x64-17` (el número es tu versión). Tiene que decir **En ejecución**; si no, clic derecho → **Iniciar**.
+
+**0.b — Crear la base con pgAdmin (recomendado en Windows).**
+
+1. Inicio → escribí `pgAdmin 4` → Enter. Tarda unos segundos en abrir. La primera vez puede pedirte una **contraseña maestra**: es propia de pgAdmin (no la de PostgreSQL); elegí una y recordala.
+2. En el panel izquierdo desplegá **Servers**. Aparece un servidor llamado `PostgreSQL 17` (el número es tu versión). Hacé clic sobre él: te pide la contraseña del usuario `postgres`, la que elegiste al instalar.
+3. Una vez conectado, desplegá el servidor, hacé **clic derecho sobre Databases** → **Create** → **Database…**
+4. En la pestaña **General**, en el campo **Database**, escribí `veterinaria`. Dejá todo lo demás como está y presioná **Save**.
+5. Comprobá que `veterinaria` aparece dentro de **Databases**, en el panel izquierdo (si no se ve, clic derecho sobre **Databases** → **Refresh**).
+
+**0.c — Alternativa por terminal con `psql`** (si no querés usar pgAdmin). Te pide la contraseña de `postgres`:
+
+PowerShell (cambiá `17` por tu versión; `dir "C:\Program Files\PostgreSQL"` te muestra cuál tenés):
+
+```powershell
+& "C:\Program Files\PostgreSQL\17\bin\psql.exe" -U postgres -c "CREATE DATABASE veterinaria;"
 ```
+
+CMD:
+
+```bat
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -U postgres -c "CREATE DATABASE veterinaria;"
+```
+
+Linux:
+
+```bash
+sudo -u postgres psql -c "CREATE DATABASE veterinaria;"
+```
+
+macOS (Homebrew o Postgres.app):
+
+```bash
+createdb veterinaria
+```
+
+En Linux y macOS el usuario y la clave de PostgreSQL pueden ser distintos de `postgres`/`TU_CLAVE` (por ejemplo, en macOS suele ser tu usuario del sistema, sin clave): ajustalos en el paso 4. Si `psql` ya está en el `PATH` de tu terminal, alcanza con `psql -U postgres -c "CREATE DATABASE veterinaria;"`. Para ver qué bases existen: `psql -U postgres -l`.
 
 **Si la base `veterinaria` ya existe** (pgAdmin o `psql` avisan `ya existe`), no es un error del proyecto: no hace falta crearla, seguí con la guía. Ojo: `reiniciar.py` borra las tablas de esa base. Si tiene datos que querés conservar, creá otra con otro nombre (por ejemplo `veterinaria_test`) y poné ese nombre al final de `DATABASE_URL` en el paso 4.
 
@@ -176,7 +210,7 @@ La terminal queda **ocupada** mostrando el log del servidor (es lo normal: no la
 - Salud sin base: `GET /health/live` → `200 {"estado": "vivo"}`
 - Salud con base: `GET /health/ready` → `200 {"estado": "listo", "base": "ok"}` (o `503` si PostgreSQL no responde)
 
-Para detener el servidor: `Ctrl + C`. Para correr otros comandos mientras la API sigue levantada, abrí **una segunda terminal** en la misma carpeta del proyecto.
+**Dejá la API corriendo mientras hacés las pruebas**: los casos de `test/` le mandan peticiones y fallan con `The connection was rejected` si está apagada. Para correr otros comandos con la API levantada, abrí **una segunda terminal** en la misma carpeta (o mandá las peticiones desde VS Code con REST Client, que no necesita terminal). Recién cuando termines de probar, frená el servidor con `Ctrl + C`.
 
 **Siguiente:** probá los endpoints con los casos de la sección [Casos de prueba](#casos-de-prueba-test).
 
@@ -303,7 +337,7 @@ La terminal queda **ocupada** mostrando el log del servidor (es lo normal: no la
 - Salud sin base: `GET /health/live` → `200 {"estado": "vivo"}`
 - Salud con base: `GET /health/ready` → `200 {"estado": "listo", "base": "ok"}` (o `503` si PostgreSQL no responde)
 
-Para detener el servidor: `Ctrl + C`. Para correr otros comandos mientras la API sigue levantada, abrí **una segunda terminal** en la misma carpeta del proyecto.
+**Dejá la API corriendo mientras hacés las pruebas**: los casos de `test/` le mandan peticiones y fallan con `The connection was rejected` si está apagada. Para correr otros comandos con la API levantada, abrí **una segunda terminal** en la misma carpeta (o mandá las peticiones desde VS Code con REST Client, que no necesita terminal). Recién cuando termines de probar, frená el servidor con `Ctrl + C`.
 
 **Siguiente:** probá los endpoints con los casos de la sección [Casos de prueba](#casos-de-prueba-test).
 
@@ -422,7 +456,7 @@ La terminal queda **ocupada** mostrando el log del servidor (es lo normal: no la
 - Salud sin base: `GET /health/live` → `200 {"estado": "vivo"}`
 - Salud con base: `GET /health/ready` → `200 {"estado": "listo", "base": "ok"}` (o `503` si PostgreSQL no responde)
 
-Para detener el servidor: `Ctrl + C`. Para correr otros comandos mientras la API sigue levantada, abrí **una segunda terminal** en la misma carpeta del proyecto.
+**Dejá la API corriendo mientras hacés las pruebas**: los casos de `test/` le mandan peticiones y fallan con `The connection was rejected` si está apagada. Para correr otros comandos con la API levantada, abrí **una segunda terminal** en la misma carpeta (o mandá las peticiones desde VS Code con REST Client, que no necesita terminal). Recién cuando termines de probar, frená el servidor con `Ctrl + C`.
 
 **Siguiente:** probá los endpoints con los casos de la sección [Casos de prueba](#casos-de-prueba-test).
 
@@ -435,7 +469,7 @@ Solo existen estas rutas (no se agregaron endpoints fuera de la consigna).
 | Método | Ruta | Cuerpo | Respuesta | Códigos |
 |---|---|---|---|---|
 | GET | `/health/live` | — | `{"estado": "vivo"}` | 200 |
-| GET | `/health/ready` | — | `{"estado": "listo", "base": "ok"}` | 200, 503 |
+| GET | `/health/ready` | — | `{"estado": "listo", "base": "ok"}` | 200 (la base responde), 503 (la base no responde) |
 | POST | `/duenios/` | `DuenioCreate` | dueño creado | 201, 409, 422 |
 | GET | `/duenios/{id}` | — | dueño con su ficha | 200, 404, 422 |
 | PATCH | `/duenios/{id}` | `DuenioUpdate` | dueño con su ficha | 200, 404, 409, 422 |
@@ -450,9 +484,95 @@ Solo existen estas rutas (no se agregaron endpoints fuera de la consigna).
 | POST | `/turnos/` | `TurnoCreate` | turno con mascota y prácticas | 201, 409, 422 |
 | GET | `/turnos/{id}` | — | turno con mascota y prácticas | 200, 404, 422 |
 | DELETE | `/turnos/{id}` | — | — | 204, 404, 422 |
-| GET | `/laboratorio/stock/{vacuna}` | — | `{"vacuna": ..., "stock": ...}` | 200 |
+| GET | `/laboratorio/stock/{vacuna}` | — | `{"vacuna": ..., "stock": ...}` (tarda ~1 s: simula un laboratorio externo) | 200 |
 
 Códigos: **201** al crear, **204** al borrar, **404** si el recurso no existe, **409** si la base rechaza la escritura (email o nombre repetido, FK inexistente, baja con dependencias), **422** si el cuerpo o los parámetros no cumplen el contrato, **503** si la base no está disponible en `/health/ready`.
+
+### Cómo leer la columna «Códigos»
+
+La columna lista **todos los códigos posibles** de cada endpoint, no los que vas a ver siempre. Con los datos en orden obtenés el primero (200, 201 o 204); los demás aparecen solo cuando algo sale mal. Por ejemplo, `/health/ready` da **200** mientras PostgreSQL responde y **503** únicamente si la base no responde (PostgreSQL apagado, clave incorrecta en `.env` o base inexistente): no es un error de la aplicación, es el aviso de que está viva pero no puede atender. Si probás con Swagger, tené en cuenta que muestra solo el 200 en «Responses», aunque la API puede devolver los otros.
+
+> La raíz `http://127.0.0.1:8000/` **no tiene endpoint** (la consigna no pide ninguno ahí): `{"detail":"Not Found"}` con 404 es lo normal. Entrá a `/docs` para probar todo desde el navegador (botón **Try it out**, después **Execute**).
+
+### Ejemplos listos para probar
+
+Después de `python reiniciar.py` existen estos datos, que podés usar como ids:
+
+| Recurso | Ids del seed |
+|---|---|
+| Dueños | `1` Ana Gómez (con ficha, tiene a Toby y Michi) · `2` Bruno Díaz (sin ficha, tiene a Rocco) |
+| Mascotas | `1` Toby (perro) · `2` Michi (gato) · `3` Rocco (perro) |
+| Prácticas | `1` Consulta `15000.00` · `2` Desparasitación `8000.00` · `3` Vacuna antirrábica `12000.00` · `4` Castración `35000.00` |
+| Turnos | `1` (Toby, con las prácticas 1 y 3, total `27000.00`) |
+
+Los ids nuevos los asigna la base: la primera alta después de reiniciar recibe `3` en dueños, `4` en mascotas, `5` en prácticas y `2` en turnos. En Swagger, reemplazá los `"string"` del ejemplo por valores reales antes de ejecutar. Los ejemplos que escriben datos (POST, PATCH, DELETE) modifican la base: para volver al estado inicial corré `python reiniciar.py`.
+
+**Salud**
+
+| Petición | Resultado |
+|---|---|
+| `GET /health/live` | **200** `{"estado": "vivo"}` |
+| `GET /health/ready` | **200** `{"estado": "listo", "base": "ok"}` · con la base caída: **503** |
+
+**Dueños y fichas**
+
+| Petición | Resultado esperado | Caso de error |
+|---|---|---|
+| `GET /duenios/1` | **200**, Ana Gómez con su ficha | `GET /duenios/999` → **404** (no existe) · `GET /duenios/abc` → **422** (el id no es un entero) |
+| `POST /duenios/` con `{"nombre": "Carla Ruiz", "email": "carla.ruiz@ejemplo.com"}` | **201**, el dueño creado con su `id` | repetir un email que ya existe, por ejemplo `"ana.gomez@ejemplo.com"` → **409** · falta `nombre` o `email` → **422** |
+| `PATCH /duenios/1` con `{"nombre": "Ana María Gómez"}` | **200**, el dueño actualizado (podés mandar solo uno de los dos campos; `{}` también da **200** sin cambios) | `PATCH /duenios/999` → **404** · `{"email": "bruno.diaz@ejemplo.com"}` (email de otro dueño) → **409** |
+| `DELETE /duenios/{id}` de un dueño recién creado, sin ficha ni mascotas (ver nota) | **204**, sin cuerpo | `DELETE /duenios/1` → **409**: Ana tiene mascotas y la base lo impide (`RESTRICT`) · `DELETE /duenios/999` → **404** |
+| `POST /duenios/2/ficha` con `{"telefono": "1145550002", "direccion": "Calle Falsa 123"}` | **201**, la ficha creada | `POST /duenios/1/ficha` → **409** (Ana ya tiene ficha: una por dueño) · `POST /duenios/999/ficha` → **404** |
+| `GET /duenios/1/mascotas` | **200**, lista con Toby y Michi (`/duenios/2/mascotas` devuelve a Rocco) | `GET /duenios/999/mascotas` → **404** |
+
+> Con el seed, **ninguno de los dos dueños se puede borrar**: Ana tiene mascotas y ficha, y Bruno tiene a Rocco (**409** por `RESTRICT`). Para ver un `DELETE` exitoso (**204**), creá primero un dueño nuevo con `POST /duenios/` y borrá ese. Ojo: un dueño con ficha y sin mascotas tampoco se puede borrar, porque la ficha no tiene `CASCADE` (decisión DD-13).
+
+> **La ficha se crea una sola vez por dueño y no se puede modificar ni borrar:** la consigna no incluye un endpoint para eso (`PATCH /duenios/{id}` solo cambia `nombre` y `email`). Por eso `POST /duenios/1/ficha` falla (Ana ya tiene una, con teléfono `1145550001` y dirección `Av. Ficticia 100`) y el alta exitosa solo se ve con un dueño que todavía no tiene ficha: Bruno (id `2`) o uno recién creado. Una vez creada, `GET /duenios/{id}` la devuelve junto con el dueño. **Cuidado con los `"string"` de ejemplo de Swagger:** si ejecutás con ellos, la ficha queda guardada con el texto literal `string` como teléfono y dirección (la API no valida esos campos) y no se puede corregir; en ese caso, `python reiniciar.py` restaura el estado inicial.
+
+Respuesta de `GET /duenios/1` (**200**):
+
+```json
+{
+  "id": 1,
+  "nombre": "Ana Gómez",
+  "email": "ana.gomez@ejemplo.com",
+  "ficha": {
+    "id": 1,
+    "duenio_id": 1,
+    "telefono": "1145550001",
+    "direccion": "Av. Ficticia 100"
+  }
+}
+```
+
+**Mascotas**
+
+| Petición | Resultado esperado | Caso de error |
+|---|---|---|
+| `GET /mascotas/1` | **200**, Toby con su dueño | `GET /mascotas/999` → **404** · `GET /mascotas/abc` → **422** |
+| `GET /mascotas/?page=1&size=2` | **200**, envoltorio paginado con 2 mascotas, `total: 3`, `pages: 2` | `size=0`, `size=101` o `page=0` → **422** · una página más allá de las existentes (por ejemplo `page=3&size=2`) → **422** |
+| `POST /mascotas/` con `{"nombre": "Luna", "especie": "gato", "duenio_id": 2}` | **201**, la mascota creada | `"duenio_id": 999` (dueño inexistente) → **409** (la base rechaza la FK) · falta un campo → **422** |
+
+**Prácticas**
+
+| Petición | Resultado esperado | Caso de error |
+|---|---|---|
+| `GET /practicas/` | **200**, las 4 prácticas del catálogo con precios como texto (`"15000.00"`) | — |
+| `POST /practicas/` con `{"nombre": "Limpieza dental", "precio": "20000.00"}` | **201**, la práctica creada | `"nombre": "Consulta"` (ya existe) → **409** · falta un campo → **422** |
+
+**Turnos**
+
+| Petición | Resultado esperado | Caso de error |
+|---|---|---|
+| `GET /turnos/1` | **200**, el turno con su mascota y sus dos prácticas (ver respuesta completa más abajo) | `GET /turnos/999` → **404** |
+| `POST /turnos/` con el cuerpo de la sección *Alta de turno* | **201**, turno `id: 2` con `total: "27000.00"` | `"mascota_id": 999` o `"practica_id": 999` → **409** (FK inexistente; no queda nada guardado) · cuerpo mal formado → **422** |
+| `DELETE /turnos/1` | **204**, sin cuerpo; un `GET /turnos/1` posterior da **404** | `DELETE /turnos/999` → **404** |
+
+**Laboratorio**
+
+| Petición | Resultado esperado |
+|---|---|
+| `GET /laboratorio/stock/rabia` | **200** `{"vacuna": "rabia", "stock": ...}`, después de ~1 segundo (el laboratorio es externo y lento; mientras tanto el resto de la API sigue respondiendo, ver caso C-09). También probados: `parvo` y `moquillo`. |
 
 ### Paginación de mascotas
 
@@ -551,12 +671,13 @@ Se usan con la extensión **[REST Client](https://marketplace.visualstudio.com/i
 **PowerShell**
 
 ```powershell
-Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/rabia } | Out-Null
-Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/parvo } | Out-Null
-Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/moquillo } | Out-Null
-Start-Sleep -Milliseconds 300
+Measure-Command { curl.exe -s http://localhost:8000/laboratorio/stock/rabia }
+1..3 | ForEach-Object { Start-Process curl.exe -ArgumentList "-s","-o","NUL","http://localhost:8000/laboratorio/stock/rabia" -WindowStyle Hidden }
+Start-Sleep -Milliseconds 100
 Measure-Command { curl.exe -s http://localhost:8000/health/live }
 ```
+
+La primera medición muestra lo que tarda **una** consulta al laboratorio sola (`TotalMilliseconds` cerca de 1000). La última mide el health con tres consultas lentas en vuelo: tiene que responder en decenas de milisegundos, no en ~1000.
 
 **Linux / macOS**
 
@@ -627,6 +748,7 @@ Después de ejecutarlo, `test/caso_C-08.http` confirma que la práctica 1 sigue 
 | `ERROR: no se pudo reiniciar la base ...` | La base no existe o las credenciales de `DATABASE_URL` son incorrectas. El script revierte la transacción y sale con código 2. | Creá la base (Paso 0) y revisá usuario, clave, puerto y nombre de la base en `.env`. |
 | `ERROR: la base de datos «veterinaria» ya existe` | La base ya estaba creada. | No es un error del proyecto: seguí con el paso 1 de tu guía, o usá otro nombre de base en `DATABASE_URL` (ver Paso 0). |
 | `psql` no se reconoce | `psql` no está en el `PATH`. | Creá la base desde pgAdmin (Paso 0); no necesitás `psql`. |
+| REST Client: `The connection was rejected. Either the requested service isn't running...` | La API está apagada (o corre en otro puerto): los casos necesitan `uvicorn` levantado. | Levantala con `uvicorn app.main:app --reload` desde la raíz del proyecto, dejala abierta y mandá de nuevo la petición. |
 | El prompt no vuelve después de `notepad .env` | El Bloc de notas sigue abierto (en Windows 11 puede tener varias pestañas). | Guardá, cerrá todas las ventanas del Bloc de notas y el prompt vuelve. Si no, `Ctrl+C`. |
 | `[Errno 10048] ... solo se permite un uso de cada dirección de socket` | El puerto 8000 ya está ocupado por otra API que sigue corriendo. | Frená la otra instancia con Ctrl+C, o levantá esta en otro puerto: `uvicorn app.main:app --port 8001`. |
 | `Reiniciando ... (se borran todas las tablas y sus datos)` | Aviso normal de `reiniciar.py`: destruye el contenido de la base apuntada. | Confirmá que `DATABASE_URL` apunta a la base de desarrollo, no a una con datos reales. |
