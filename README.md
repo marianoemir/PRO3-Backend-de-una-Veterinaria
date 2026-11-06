@@ -13,131 +13,146 @@ Construida con **FastAPI + SQLModel (async) + PostgreSQL 16+**. Solo backend: si
 
 | Requisito | Versión / detalle |
 |---|---|
-| Python | 3.12 o superior (`python --version` o `python3 --version`); en Windows, si `python` no responde, usá `py -3` |
+| Python | 3.12 o superior; probado con 3.12 y 3.13 (`python --version` o `python3 --version`); en Windows se usa `py -3.13` (o `py -3.12`) para crear el entorno (el comando `python` puede ser un alias roto) |
 | PostgreSQL | 16 o superior, con **pgAdmin** (viene con el instalador) |
-| Git | opcional, solo para clonar |
+| Git | opcional, solo para clonar (sin Git se puede descargar el ZIP, ver paso 1 de tu guía) |
 
-> **No hace falta `psql` ni `createdb` en el `PATH`.** La base se crea desde pgAdmin; `psql` se menciona solo como alternativa.
+> **No hace falta `psql` ni `createdb` en el `PATH`.** La base se crea desde pgAdmin (Paso 0); `psql` se menciona solo como alternativa.
 
 ---
 
 ## Puesta en marcha desde cero
 
-Todos los comandos se ejecutan **desde la raíz del repositorio**.
+Elegí **una** terminal y seguí **solo su guía**, de arriba abajo, sin saltearte pasos:
 
-### 1. Obtener el código
+| Si usás... | Seguí la guía | Cómo reconocerla |
+|---|---|---|
+| Windows con **PowerShell** (recomendada) | [Guía A](#guía-a--windows-powershell) | el prompt empieza con `PS`, por ejemplo `PS C:\Proyectos>` |
+| Windows con **CMD** (Símbolo del sistema) | [Guía B](#guía-b--windows-cmd) | el prompt es solo la ruta y `>`, por ejemplo `C:\Proyectos>` |
+| **Linux** o **macOS** (también Git Bash en Windows) | [Guía C](#guía-c--linux--macos) | el prompt termina en `$` o `%` |
 
-```bash
+> **No mezcles terminales.** Los comandos de una guía no funcionan en otra: `Copy-Item` y `Activate.ps1` solo existen en PowerShell; `copy` y `activate.bat`, solo en CMD; `cp` y `source`, solo en Linux/macOS. La terminal integrada de VS Code puede abrir cualquiera de las tres: mirá el prompt antes de pegar.
+
+Cada bloque de código se pega **entero y tal cual**, salvo donde el texto diga que tenés que cambiar algo (tu clave de PostgreSQL). Los comandos se ejecutan **desde la raíz del repositorio**, que es la carpeta que se crea al clonar.
+
+### Paso 0 — Crear la base de datos `veterinaria` (una sola vez, igual en todos los sistemas)
+
+`reiniciar.py` **no crea la base**: solo borra y recrea las **tablas** dentro de una base que ya exista. Por eso se crea primero, con **pgAdmin** (viene con el instalador de PostgreSQL y no requiere `psql` en el `PATH`):
+
+1. Abrí pgAdmin y conectate a tu servidor local (`localhost:5432`; te pide la clave de `postgres`, la que elegiste al instalar PostgreSQL).
+2. Clic derecho sobre **Databases** → **Create** → **Database…**
+3. En **Database** escribí `veterinaria` y presioná **Save**.
+
+**Alternativa con `psql`** (solo si lo tenés en el `PATH`; el comando es el mismo en cualquier terminal):
+
+```text
+psql -U postgres -c "CREATE DATABASE veterinaria;"
+```
+
+**Si la base `veterinaria` ya existe** (pgAdmin o `psql` avisan `ya existe`), no es un error del proyecto: no hace falta crearla, seguí con la guía. Ojo: `reiniciar.py` borra las tablas de esa base. Si tiene datos que querés conservar, creá otra con otro nombre (por ejemplo `veterinaria_test`) y poné ese nombre al final de `DATABASE_URL` en el paso 4.
+
+---
+
+### Guía A — Windows PowerShell
+
+Abrí **PowerShell**: menú Inicio, escribí `PowerShell` y Enter. El prompt tiene que empezar con `PS`. Si empieza sin `PS`, estás en CMD: usá la [Guía B](#guía-b--windows-cmd).
+
+#### 1. Obtener el código
+
+Creá la carpeta donde vas a guardar el proyecto y entrá en ella (si la carpeta ya existe, el aviso de error de `mkdir` es inofensivo):
+
+```powershell
+mkdir C:\Proyectos
+cd C:\Proyectos
+```
+
+Cloná el repositorio y entrá a la carpeta del proyecto:
+
+```powershell
 git clone https://github.com/marianoemir/PRO3-Backend-de-una-Veterinaria.git
 cd PRO3-Backend-de-una-Veterinaria
 ```
 
-### 2. Crear y activar el entorno virtual
+`git clone` **crea una carpeta nueva** llamada `PRO3-Backend-de-una-Veterinaria` dentro de la carpeta donde estás, y el `cd` entra en ella. Esa es la **raíz del repositorio**: todos los pasos siguientes se ejecutan ahí, **en esta misma terminal** (si la cerrás, volvé a abrirla y entrá otra vez con `cd`).
 
-Elegí el bloque de **tu** shell. En Windows el entorno virtual usa `Scripts/`; en Linux/macOS, `bin/`.
-
-**PowerShell (Windows)**
+Comprobá que estás en el lugar correcto. Tiene que listar, entre otros, `README.md`, `requirements.txt`, `reiniciar.py` y `env.example`:
 
 ```powershell
-python -m venv .venv
+dir
+```
+
+> **Sin Git:** en la página del repositorio en GitHub, botón verde **Code** → **Download ZIP**. Descomprimilo, abrí la terminal dentro de la carpeta que contiene `requirements.txt` y seguí desde el paso 2.
+
+#### 2. Crear y activar el entorno virtual
+
+Verificá la versión de Python con el lanzador de Windows:
+
+```powershell
+py -0p
+py -3.13 --version
+```
+
+`py -0p` lista los Pythons instalados y `py -3.13 --version` tiene que mostrar `Python 3.13.x`. Si solo tenés 3.12, usá `py -3.12` en lugar de `py -3.13` en todos los comandos de esta guía. **No uses `py -3` a secas**: elige la versión más nueva que tengas (por ejemplo 3.14), y el proyecto está probado con 3.12 y 3.13. Si no muestra nada o `py` no se reconoce, mirá [Problemas frecuentes](#problemas-frecuentes): en Windows el comando `python` suele ser un alias roto que falla en silencio, y por eso en esta guía el entorno se crea con `py`, el lanzador oficial de Python para Windows.
+
+Creá el entorno virtual y comprobá que quedó bien armado:
+
+```powershell
+py -3.13 -m venv .venv
+Test-Path .\.venv\Scripts\Activate.ps1
+```
+
+`Test-Path` tiene que responder **`True`**. Si responde `False`, el entorno quedó incompleto: recrealo y volvé a comprobar:
+
+```powershell
+py -3.13 -m venv .venv --clear
+Test-Path .\.venv\Scripts\Activate.ps1
+```
+
+Activalo:
+
+```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-**CMD (Windows)**
+Queda activo cuando el prompt empieza con **`(.venv)`**, por ejemplo `(.venv) PS C:\Proyectos\PRO3-Backend-de-una-Veterinaria>`. Si no aparece `(.venv)`, no está activo.
 
-```bat
-python -m venv .venv
-.venv\Scripts\activate.bat
-```
+**Si PowerShell bloquea la activación** con `UnauthorizedAccess` (política de ejecución `Restricted`), no hace falta cambiar la configuración del sistema: en los pasos 3, 5 y 6 reemplazá `pip`, `python` y `uvicorn` por `.\.venv\Scripts\python.exe -m pip`, `.\.venv\Scripts\python.exe` y `.\.venv\Scripts\python.exe -m uvicorn`, respectivamente. (La otra salida es usar la [Guía B](#guía-b--windows-cmd).)
 
-**Git Bash (Windows)**
+#### 3. Instalar las dependencias
 
-```bash
-python -m venv .venv
-source .venv/Scripts/activate
-```
-
-**Linux / macOS**
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-> Si en Linux/macOS no existe el comando `python`, usá `python3` también para el resto de los pasos.
-
-**Si PowerShell bloquea la activación** con `UnauthorizedAccess` (política de ejecución `Restricted`), no hace falta cambiar la configuración del sistema: en los pasos 3, 6 y 7 reemplazá `pip`, `python` y `uvicorn` por `.\.venv\Scripts\python.exe -m pip`, `.\.venv\Scripts\python.exe` y `.\.venv\Scripts\python.exe -m uvicorn`, respectivamente.
-
-En Linux/macOS el equivalente es `.venv/bin/python`, y así con cada comando.
-
-### 3. Instalar las dependencias
-
-```bash
+```powershell
 pip install -r requirements.txt
 ```
 
-Instala `fastapi[standard]` (incluye `uvicorn`), `sqlmodel`, `sqlalchemy[asyncio]`, `asyncpg` y `python-dotenv`.
+Tiene que mostrar líneas `Collecting ...` y terminar con `Successfully installed ...` (el aviso `A new release of pip is available` es informativo y se ignora). Si en cambio dice `Requirement already satisfied` en todas las líneas, el entorno **no** está activo: volvé al paso 2. Instala `fastapi[standard]` (incluye `uvicorn`), `sqlmodel`, `sqlalchemy[asyncio]`, `asyncpg` y `python-dotenv`.
 
-### 4. Crear el archivo `.env`
+#### 4. Crear el archivo `.env`
 
-El repositorio incluye `env.example` con la forma del valor. Copialo y completá tus credenciales:
-
-**PowerShell**
+Se crea con **un solo comando**, así no hay editor de por medio ni riesgo de que se cuele un espacio al principio. Reemplazá `TU_CLAVE` por la contraseña de tu usuario de PostgreSQL (`postgres` es el usuario por defecto; si tu usuario es otro, cambiá también ese texto) y, si en el Paso 0 usaste otro nombre de base, cambiá `veterinaria` por ese nombre. Dejá las comillas simples: evitan problemas con caracteres como `$`.
 
 ```powershell
-Copy-Item env.example .env
+Set-Content -Path .env -Value 'DATABASE_URL=postgresql+asyncpg://postgres:TU_CLAVE@localhost:5432/veterinaria' -Encoding ascii
+Get-Content .env
 ```
 
-**CMD**
+Tiene que mostrar **exactamente una línea** que empieza con `DATABASE_URL=`, sin nada antes. Si tu contraseña tiene caracteres especiales, no se puede poner tal cual en la URL: escribilos codificados (`@` → `%40`, `:` → `%3A`, `/` → `%2F`, `#` → `%23`, `?` → `%3F`, `%` → `%25`).
 
-```bat
-copy env.example .env
-```
-
-**Git Bash / Linux / macOS**
-
-```bash
-cp env.example .env
-```
-
-Después editá `.env` y reemplazá usuario y clave por los de tu PostgreSQL local:
-
-```dotenv
-DATABASE_URL=postgresql+asyncpg://usuario:clave@localhost:5432/veterinaria
-```
+**Alternativa con editor** (si preferís editar a mano): copiá el ejemplo con `Copy-Item env.example .env`, abrilo con `notepad .env`, dejá solo la línea `DATABASE_URL=...` empezando en la primera columna (sin espacios ni comillas), guardá con `Ctrl+S` y **cerrá el Bloc de notas por completo** (todas sus pestañas; si queda abierto, el prompt puede no volver). Comprobá con `Get-Content .env`.
 
 > `.env` está en `.gitignore`: **nunca** se versiona. No subas credenciales reales al repositorio.
 
-### 5. Crear la base de datos `veterinaria`
+#### 5. Crear el esquema y cargar el seed
 
-**Con pgAdmin (camino recomendado, no requiere `psql`)**
-
-1. Abrí pgAdmin y conectate a tu servidor local (`localhost:5432`).
-2. Clic derecho sobre **Databases** → **Create** → **Database…**
-3. En **Database** escribí `veterinaria` y presioná **Save**.
-
-**Alternativa con `psql`** (solo si tenés los binarios en el `PATH`):
-
-```bash
-psql -U postgres -c "CREATE DATABASE veterinaria;"
-# o
-createdb -U postgres veterinaria
-```
-
-`reiniciar.py` no crea la base: solo borra y recrea **tablas** dentro de una base existente.
-
-### 6. Crear el esquema y cargar el seed
-
-```bash
+```powershell
 python reiniciar.py
 ```
 
 > ⚠️ **`reiniciar.py` borra todas las tablas y sus datos** de la base apuntada por `DATABASE_URL`, y luego las recrea con el seed mínimo. No lo apuntes a una base con datos que quieras conservar.
 
-Salida esperada (la consola también imprime líneas INFO de SQLAlchemy por echo=True; lo importante es el resumen final):
+Salida esperada (la consola también imprime líneas INFO de SQLAlchemy por `echo=True`; lo importante es el resumen final):
 
 ```text
-Reiniciando postgresql+asyncpg://usuario:***@localhost:5432/veterinaria (se borran todas las tablas y sus datos)
+Reiniciando postgresql+asyncpg://postgres:***@localhost:5432/veterinaria (se borran todas las tablas y sus datos)
 Reinicio completo. Conteos por tabla:
   duenio: 2
   ficha_duenio: 1
@@ -147,21 +162,269 @@ Reinicio completo. Conteos por tabla:
   turno_practica: 2
 ```
 
-El seed deja: 2 dueños (Ana Gómez con ficha, Bruno Díaz sin ficha), 3 mascotas (Toby, Michi, Rocco), 4 prácticas (Consulta `15000.00`, Desparasitación `8000.00`, Vacuna antirrábica `12000.00`, Castración `35000.00`) y 1 turno con 2 prácticas. Los ids son fijos para que los ejemplos del enunciado funcionen tal cual: mascota `1` = Toby, práctica `1` = Consulta, práctica `3` = Vacuna antirrábica, y el próximo turno recibe `id = 2`.
+El seed deja: 2 dueños (Ana Gómez con ficha, Bruno Díaz sin ficha), 3 mascotas (Toby, Michi, Rocco), 4 prácticas (Consulta `15000.00`, Desparasitación `8000.00`, Vacuna antirrábica `12000.00`, Castración `35000.00`) y 1 turno con 2 prácticas. Los ids son fijos para que los ejemplos del enunciado funcionen tal cual: mascota `1` = Toby, práctica `1` = Consulta, práctica `3` = Vacuna antirrábica, y el próximo turno recibe `id = 2`. Si falla, mirá la tabla de [Problemas frecuentes](#problemas-frecuentes).
 
-### 7. Levantar la API
+#### 6. Levantar la API
 
-```bash
+```powershell
 uvicorn app.main:app --reload
 ```
 
-La API queda en <http://127.0.0.1:8000>:
+La terminal queda **ocupada** mostrando el log del servidor (es lo normal: no la cierres). Cuando veas `Application startup complete`, la API está lista en <http://127.0.0.1:8000>:
 
 - Documentación interactiva: <http://127.0.0.1:8000/docs>
 - Salud sin base: `GET /health/live` → `200 {"estado": "vivo"}`
 - Salud con base: `GET /health/ready` → `200 {"estado": "listo", "base": "ok"}` (o `503` si PostgreSQL no responde)
 
-Para detener el servidor: `Ctrl + C`.
+Para detener el servidor: `Ctrl + C`. Para correr otros comandos mientras la API sigue levantada, abrí **una segunda terminal** en la misma carpeta del proyecto.
+
+**Siguiente:** probá los endpoints con los casos de la sección [Casos de prueba](#casos-de-prueba-test).
+
+---
+
+### Guía B — Windows CMD
+
+Abrí **CMD**: menú Inicio, escribí `cmd` y Enter. El prompt es la ruta seguida de `>`, sin `PS` al principio. Si empieza con `PS`, estás en PowerShell: usá la [Guía A](#guía-a--windows-powershell).
+
+#### 1. Obtener el código
+
+Creá la carpeta donde vas a guardar el proyecto y entrá en ella (si la carpeta ya existe, el aviso de error de `mkdir` es inofensivo; `cd /d` también cambia de unidad si hace falta):
+
+```bat
+mkdir C:\Proyectos
+cd /d C:\Proyectos
+```
+
+Cloná el repositorio y entrá a la carpeta del proyecto:
+
+```bat
+git clone https://github.com/marianoemir/PRO3-Backend-de-una-Veterinaria.git
+cd PRO3-Backend-de-una-Veterinaria
+```
+
+`git clone` **crea una carpeta nueva** llamada `PRO3-Backend-de-una-Veterinaria` dentro de la carpeta donde estás, y el `cd` entra en ella. Esa es la **raíz del repositorio**: todos los pasos siguientes se ejecutan ahí, **en esta misma terminal** (si la cerrás, volvé a abrirla y entrá otra vez con `cd`).
+
+Comprobá que estás en el lugar correcto. Tiene que listar, entre otros, `README.md`, `requirements.txt`, `reiniciar.py` y `env.example`:
+
+```bat
+dir
+```
+
+> **Sin Git:** en la página del repositorio en GitHub, botón verde **Code** → **Download ZIP**. Descomprimilo, abrí la terminal dentro de la carpeta que contiene `requirements.txt` y seguí desde el paso 2.
+
+#### 2. Crear y activar el entorno virtual
+
+Verificá la versión de Python con el lanzador de Windows:
+
+```bat
+py -0p
+py -3.13 --version
+```
+
+`py -0p` lista los Pythons instalados y `py -3.13 --version` tiene que mostrar `Python 3.13.x`. Si solo tenés 3.12, usá `py -3.12` en lugar de `py -3.13` en todos los comandos de esta guía. **No uses `py -3` a secas**: elige la versión más nueva que tengas (por ejemplo 3.14), y el proyecto está probado con 3.12 y 3.13. Si no muestra nada o `py` no se reconoce, mirá [Problemas frecuentes](#problemas-frecuentes): en Windows el comando `python` suele ser un alias roto que falla en silencio, y por eso en esta guía el entorno se crea con `py`, el lanzador oficial de Python para Windows.
+
+Creá el entorno virtual y comprobá que quedó bien armado:
+
+```bat
+py -3.13 -m venv .venv
+if exist .venv\Scripts\activate.bat (echo OK) else (echo FALTA)
+```
+
+Tiene que responder **`OK`**. Si responde `FALTA`, el entorno quedó incompleto: recrealo y volvé a comprobar:
+
+```bat
+py -3.13 -m venv .venv --clear
+if exist .venv\Scripts\activate.bat (echo OK) else (echo FALTA)
+```
+
+Activalo:
+
+```bat
+.venv\Scripts\activate.bat
+```
+
+Queda activo cuando el prompt empieza con **`(.venv)`**, por ejemplo `(.venv) C:\Proyectos\PRO3-Backend-de-una-Veterinaria>`. Si no aparece `(.venv)`, no está activo.
+
+#### 3. Instalar las dependencias
+
+```bat
+pip install -r requirements.txt
+```
+
+Tiene que mostrar líneas `Collecting ...` y terminar con `Successfully installed ...` (el aviso `A new release of pip is available` es informativo y se ignora). Si en cambio dice `Requirement already satisfied` en todas las líneas, el entorno **no** está activo: volvé al paso 2. Instala `fastapi[standard]` (incluye `uvicorn`), `sqlmodel`, `sqlalchemy[asyncio]`, `asyncpg` y `python-dotenv`.
+
+#### 4. Crear el archivo `.env`
+
+Se crea con **un solo comando**, así no hay editor de por medio ni riesgo de que se cuele un espacio al principio. Reemplazá `TU_CLAVE` por la contraseña de tu usuario de PostgreSQL (`postgres` es el usuario por defecto; si tu usuario es otro, cambiá también ese texto) y, si en el Paso 0 usaste otro nombre de base, cambiá `veterinaria` por ese nombre. No pongas un espacio antes de `> .env`: el comando de arriba ya está armado para que no quede ninguno.
+
+```bat
+(echo DATABASE_URL=postgresql+asyncpg://postgres:TU_CLAVE@localhost:5432/veterinaria)> .env
+type .env
+```
+
+Tiene que mostrar **exactamente una línea** que empieza con `DATABASE_URL=`, sin nada antes. Si tu contraseña tiene caracteres especiales, no se puede poner tal cual en la URL: escribilos codificados (`@` → `%40`, `:` → `%3A`, `/` → `%2F`, `#` → `%23`, `?` → `%3F`, `%` → `%25`).
+
+**Alternativa con editor** (si preferís editar a mano): copiá el ejemplo con `copy env.example .env`, abrilo con `notepad .env`, dejá solo la línea `DATABASE_URL=...` empezando en la primera columna (sin espacios ni comillas), guardá con `Ctrl+S` y cerrá el Bloc de notas por completo. Comprobá con `type .env`. **Si tu contraseña tiene `&`, `^` o `%`, usá esta alternativa** en lugar del comando de arriba.
+
+> `.env` está en `.gitignore`: **nunca** se versiona. No subas credenciales reales al repositorio.
+
+#### 5. Crear el esquema y cargar el seed
+
+```bat
+python reiniciar.py
+```
+
+> ⚠️ **`reiniciar.py` borra todas las tablas y sus datos** de la base apuntada por `DATABASE_URL`, y luego las recrea con el seed mínimo. No lo apuntes a una base con datos que quieras conservar.
+
+Salida esperada (la consola también imprime líneas INFO de SQLAlchemy por `echo=True`; lo importante es el resumen final):
+
+```text
+Reiniciando postgresql+asyncpg://postgres:***@localhost:5432/veterinaria (se borran todas las tablas y sus datos)
+Reinicio completo. Conteos por tabla:
+  duenio: 2
+  ficha_duenio: 1
+  mascota: 3
+  practica: 4
+  turno: 1
+  turno_practica: 2
+```
+
+El seed deja: 2 dueños (Ana Gómez con ficha, Bruno Díaz sin ficha), 3 mascotas (Toby, Michi, Rocco), 4 prácticas (Consulta `15000.00`, Desparasitación `8000.00`, Vacuna antirrábica `12000.00`, Castración `35000.00`) y 1 turno con 2 prácticas. Los ids son fijos para que los ejemplos del enunciado funcionen tal cual: mascota `1` = Toby, práctica `1` = Consulta, práctica `3` = Vacuna antirrábica, y el próximo turno recibe `id = 2`. Si falla, mirá la tabla de [Problemas frecuentes](#problemas-frecuentes).
+
+#### 6. Levantar la API
+
+```bat
+uvicorn app.main:app --reload
+```
+
+La terminal queda **ocupada** mostrando el log del servidor (es lo normal: no la cierres). Cuando veas `Application startup complete`, la API está lista en <http://127.0.0.1:8000>:
+
+- Documentación interactiva: <http://127.0.0.1:8000/docs>
+- Salud sin base: `GET /health/live` → `200 {"estado": "vivo"}`
+- Salud con base: `GET /health/ready` → `200 {"estado": "listo", "base": "ok"}` (o `503` si PostgreSQL no responde)
+
+Para detener el servidor: `Ctrl + C`. Para correr otros comandos mientras la API sigue levantada, abrí **una segunda terminal** en la misma carpeta del proyecto.
+
+**Siguiente:** probá los endpoints con los casos de la sección [Casos de prueba](#casos-de-prueba-test).
+
+---
+
+### Guía C — Linux / macOS
+
+Abrí la aplicación **Terminal**. (En **Git Bash** de Windows los pasos son los mismos con tres cambios: usá `python` en lugar de `python3`, activá con `source .venv/Scripts/activate` y editá `.env` con `notepad .env`.)
+
+#### 1. Obtener el código
+
+Creá la carpeta donde vas a guardar el proyecto y entrá en ella:
+
+```bash
+mkdir -p ~/Proyectos
+cd ~/Proyectos
+```
+
+Cloná el repositorio y entrá a la carpeta del proyecto:
+
+```bash
+git clone https://github.com/marianoemir/PRO3-Backend-de-una-Veterinaria.git
+cd PRO3-Backend-de-una-Veterinaria
+```
+
+`git clone` **crea una carpeta nueva** llamada `PRO3-Backend-de-una-Veterinaria` dentro de la carpeta donde estás, y el `cd` entra en ella. Esa es la **raíz del repositorio**: todos los pasos siguientes se ejecutan ahí, **en esta misma terminal** (si la cerrás, volvé a abrirla y entrá otra vez con `cd`).
+
+Comprobá que estás en el lugar correcto. Tiene que listar, entre otros, `README.md`, `requirements.txt`, `reiniciar.py` y `env.example`:
+
+```bash
+ls
+```
+
+> **Sin Git:** en la página del repositorio en GitHub, botón verde **Code** → **Download ZIP**. Descomprimilo, abrí la terminal dentro de la carpeta que contiene `requirements.txt` y seguí desde el paso 2.
+
+#### 2. Crear y activar el entorno virtual
+
+Verificá la versión de Python (tiene que ser 3.12 o superior):
+
+```bash
+python3 --version
+```
+
+Creá el entorno virtual y comprobá que quedó bien armado:
+
+```bash
+python3 -m venv .venv
+ls .venv/bin/activate
+```
+
+`ls` tiene que mostrar `.venv/bin/activate`. Si dice `No such file or directory`, en Debian/Ubuntu falta el paquete del entorno virtual: instalalo con `sudo apt install python3-venv`, borrá la carpeta con `rm -rf .venv` y repetí los dos comandos.
+
+Activalo:
+
+```bash
+source .venv/bin/activate
+```
+
+Queda activo cuando el prompt empieza con **`(.venv)`**. Dentro del entorno activo, `python` y `pip` ya apuntan al entorno (no hace falta `python3` en los pasos siguientes).
+
+#### 3. Instalar las dependencias
+
+```bash
+pip install -r requirements.txt
+```
+
+Tiene que mostrar líneas `Collecting ...` y terminar con `Successfully installed ...` (el aviso `A new release of pip is available` es informativo y se ignora). Si en cambio dice `Requirement already satisfied` en todas las líneas, el entorno **no** está activo: volvé al paso 2. Instala `fastapi[standard]` (incluye `uvicorn`), `sqlmodel`, `sqlalchemy[asyncio]`, `asyncpg` y `python-dotenv`.
+
+#### 4. Crear el archivo `.env`
+
+Se crea con **un solo comando**, así no hay editor de por medio ni riesgo de que se cuele un espacio al principio. Reemplazá `TU_CLAVE` por la contraseña de tu usuario de PostgreSQL (`postgres` es el usuario por defecto; si tu usuario es otro, cambiá también ese texto) y, si en el Paso 0 usaste otro nombre de base, cambiá `veterinaria` por ese nombre. Dejá las comillas simples.
+
+```bash
+printf '%s\n' 'DATABASE_URL=postgresql+asyncpg://postgres:TU_CLAVE@localhost:5432/veterinaria' > .env
+cat .env
+```
+
+Tiene que mostrar **exactamente una línea** que empieza con `DATABASE_URL=`, sin nada antes. Si tu contraseña tiene caracteres especiales, no se puede poner tal cual en la URL: escribilos codificados (`@` → `%40`, `:` → `%3A`, `/` → `%2F`, `#` → `%23`, `?` → `%3F`, `%` → `%25`).
+
+**Alternativa con editor** (si preferís editar a mano): copiá el ejemplo con `cp env.example .env`, abrilo con `nano .env` (en macOS también `open -e .env`), dejá solo la línea `DATABASE_URL=...` empezando en la primera columna, y guardá (en nano: `Ctrl+O`, `Enter`, `Ctrl+X`). Comprobá con `cat .env`.
+
+> `.env` está en `.gitignore`: **nunca** se versiona. No subas credenciales reales al repositorio.
+
+#### 5. Crear el esquema y cargar el seed
+
+```bash
+python reiniciar.py
+```
+
+> ⚠️ **`reiniciar.py` borra todas las tablas y sus datos** de la base apuntada por `DATABASE_URL`, y luego las recrea con el seed mínimo. No lo apuntes a una base con datos que quieras conservar.
+
+Salida esperada (la consola también imprime líneas INFO de SQLAlchemy por `echo=True`; lo importante es el resumen final):
+
+```text
+Reiniciando postgresql+asyncpg://postgres:***@localhost:5432/veterinaria (se borran todas las tablas y sus datos)
+Reinicio completo. Conteos por tabla:
+  duenio: 2
+  ficha_duenio: 1
+  mascota: 3
+  practica: 4
+  turno: 1
+  turno_practica: 2
+```
+
+El seed deja: 2 dueños (Ana Gómez con ficha, Bruno Díaz sin ficha), 3 mascotas (Toby, Michi, Rocco), 4 prácticas (Consulta `15000.00`, Desparasitación `8000.00`, Vacuna antirrábica `12000.00`, Castración `35000.00`) y 1 turno con 2 prácticas. Los ids son fijos para que los ejemplos del enunciado funcionen tal cual: mascota `1` = Toby, práctica `1` = Consulta, práctica `3` = Vacuna antirrábica, y el próximo turno recibe `id = 2`. Si falla, mirá la tabla de [Problemas frecuentes](#problemas-frecuentes).
+
+#### 6. Levantar la API
+
+```bash
+uvicorn app.main:app --reload
+```
+
+La terminal queda **ocupada** mostrando el log del servidor (es lo normal: no la cierres). Cuando veas `Application startup complete`, la API está lista en <http://127.0.0.1:8000>:
+
+- Documentación interactiva: <http://127.0.0.1:8000/docs>
+- Salud sin base: `GET /health/live` → `200 {"estado": "vivo"}`
+- Salud con base: `GET /health/ready` → `200 {"estado": "listo", "base": "ok"}` (o `503` si PostgreSQL no responde)
+
+Para detener el servidor: `Ctrl + C`. Para correr otros comandos mientras la API sigue levantada, abrí **una segunda terminal** en la misma carpeta del proyecto.
+
+**Siguiente:** probá los endpoints con los casos de la sección [Casos de prueba](#casos-de-prueba-test).
 
 ---
 
@@ -257,9 +520,9 @@ Justificación completa: `openspec/changes/archive/2026-10-31-modelos-y-esquema/
 
 ## Casos de prueba (`test/`)
 
-Todos los casos asumen la base recién reiniciada:
+Todos los casos asumen la base recién reiniciada. Con el entorno virtual activo, en la raíz del repositorio (el comando es igual en PowerShell, CMD y Linux/macOS):
 
-```bash
+```text
 python reiniciar.py
 ```
 
@@ -283,7 +546,9 @@ Se usan con la extensión **[REST Client](https://marketplace.visualstudio.com/i
 2. Abrí el archivo `test/caso_C-0X.http` y presioná **Send Request** sobre cada bloque (o `Ctrl + Alt + R`).
 3. Cada archivo declara `@baseUrl = http://localhost:8000` y deja la respuesta esperada en un comentario.
 
-> **C-09 no se puede medir con REST Client**, porque ejecuta las peticiones en serie. La nota al final de `test/caso_C-09.http` indica cómo medir la concurrencia real desde PowerShell: lanzar las tres consultas al laboratorio con `Start-Job` y medir el endpoint de salud con `Measure-Command`.
+> **C-09 no se puede medir con REST Client**, porque ejecuta las peticiones en serie. La nota al final de `test/caso_C-09.http` explica la idea: lanzar las tres consultas al laboratorio en paralelo y medir el endpoint de salud mientras corren. Con la API levantada (paso 6), abrí una **segunda terminal** y usá el bloque de la tuya.
+
+**PowerShell**
 
 ```powershell
 Start-Job { curl.exe -s http://localhost:8000/laboratorio/stock/rabia } | Out-Null
@@ -293,15 +558,27 @@ Start-Sleep -Milliseconds 300
 Measure-Command { curl.exe -s http://localhost:8000/health/live }
 ```
 
+**Linux / macOS**
+
+```bash
+curl -s http://localhost:8000/laboratorio/stock/rabia > /dev/null &
+curl -s http://localhost:8000/laboratorio/stock/parvo > /dev/null &
+curl -s http://localhost:8000/laboratorio/stock/moquillo > /dev/null &
+sleep 0.3
+time curl -s http://localhost:8000/health/live
+```
+
+**CMD:** no tiene una forma simple de lanzar procesos en paralelo; usá PowerShell para este caso.
+
 El health debe responder en ~0 ms mientras cada consulta al laboratorio tarda ~1000 ms.
 
 ### Cómo correr el `.sql` (caso C-08)
 
 **Con pgAdmin:** abrí el **Query Tool** sobre la base `veterinaria` (Tools → Query Tool), cargá `test/caso_C-08.sql` con el botón de abrir archivo y ejecutalo con **F5** o el botón ▶. Esperado: `ERROR: new row for relation "practica" violates check constraint ... (SQLSTATE 23514)` y 0 filas modificadas.
 
-**Con `psql`** (si está en el `PATH`):
+**Con `psql`** (si está en el `PATH`; el comando es igual en PowerShell, CMD y Linux/macOS, y se corre desde la raíz del repositorio):
 
-```bash
+```text
 psql -U postgres -d veterinaria -f test/caso_C-08.sql
 ```
 
@@ -338,11 +615,19 @@ Después de ejecutarlo, `test/caso_C-08.http` confirma que la práctica 1 sigue 
 
 ## Problemas frecuentes
 
-| Mensaje | Causa | Solución |
+| Mensaje o síntoma | Causa | Solución |
 |---|---|---|
-| `FATAL: DATABASE_URL no está definida. Copiá env.example a .env y configurá la conexión.` | No existe `.env` o le falta `DATABASE_URL`. El arranque aborta con código 1. | Copiá `env.example` a `.env` (paso 4) y completá la URL. |
-| `ERROR: no se pudo reiniciar la base ...` | La base `veterinaria` no existe o las credenciales de `DATABASE_URL` son incorrectas. El script revierte la transacción y sale con código 2. | Creá la base desde pgAdmin (paso 5) y revisá usuario, clave y puerto en `.env`. |
-| `python -m venv .venv` no muestra nada y después `Activate.ps1` dice que no se reconoce (no existe la carpeta `.venv`) | En Windows, el primer `python` del `PATH` puede ser un alias del instalador que no hace nada y falla en silencio; las dependencias terminan instalándose en el Python global. | Usá el lanzador con versión explícita: `py -3.13 -m venv .venv` (o `py -3.12`). Comprobá que `Test-Path .\.venv\Scripts\Activate.ps1` dé `True` y que `where.exe python` devuelva primero el de `.venv`. |
+| `"Copy-Item" no se reconoce como un comando interno o externo` (o `Start-Process`, `Test-Path`) | Estás en **CMD** y pegaste comandos de PowerShell. | Abrí PowerShell (prompt con `PS`) y seguí la Guía A, o seguí la Guía B completa en CMD. |
+| `'cp' no se reconoce...` o `'source' no se reconoce...` | Estás en Windows y pegaste comandos de Linux/macOS. | Seguí la Guía A (PowerShell) o la Guía B (CMD). |
+| `Activate.ps1` no se reconoce / no existe la carpeta `.venv` | `python -m venv .venv` no terminó de crear el entorno (en Windows, el primer `python` del `PATH` puede ser un alias que falla en silencio). | Comprobá con `Test-Path .\.venv\Scripts\Activate.ps1` (PowerShell) y recrealo con `py -3.13 -m venv .venv --clear`. |
+| `UnauthorizedAccess` al activar en PowerShell | La política de ejecución impide correr scripts. | Usá el atajo de la Guía A (paso 2) o la Guía B (CMD). |
+| `pip install` dice `Requirement already satisfied` en todo | El entorno virtual no está activo (falta `(.venv)` en el prompt) y se usa el Python global. | Activalo según tu guía (paso 2) y repetí el `pip install`. |
+| `python --version` no muestra nada, o `python` abre la tienda de Microsoft | En Windows, `python` puede ser un alias que falla en silencio (suele aparecer como `C:\Windows\System32\python`). | Usá `py -3.13` (o `py -3.12`) en lugar de `python` para crear el entorno (`py -3.13 -m venv .venv`). Una vez activado el entorno, `python` sí funciona. Si `py` tampoco se reconoce, instalá Python 3.12+ desde python.org marcando **Add python.exe to PATH**. |
+| `FATAL: DATABASE_URL no está definida. Copiá env.example a .env y configurá la conexión.` | No existe `.env` o le falta `DATABASE_URL`, o estás en otra carpeta. El arranque aborta con código 1. | Hacé el paso 4 de tu guía y comprobá con `dir` / `ls` que `.env` está junto a `reiniciar.py`. |
+| `ERROR: no se pudo reiniciar la base ...` | La base no existe o las credenciales de `DATABASE_URL` son incorrectas. El script revierte la transacción y sale con código 2. | Creá la base (Paso 0) y revisá usuario, clave, puerto y nombre de la base en `.env`. |
+| `ERROR: la base de datos «veterinaria» ya existe` | La base ya estaba creada. | No es un error del proyecto: seguí con el paso 1 de tu guía, o usá otro nombre de base en `DATABASE_URL` (ver Paso 0). |
+| `psql` no se reconoce | `psql` no está en el `PATH`. | Creá la base desde pgAdmin (Paso 0); no necesitás `psql`. |
+| El prompt no vuelve después de `notepad .env` | El Bloc de notas sigue abierto (en Windows 11 puede tener varias pestañas). | Guardá, cerrá todas las ventanas del Bloc de notas y el prompt vuelve. Si no, `Ctrl+C`. |
 | `[Errno 10048] ... solo se permite un uso de cada dirección de socket` | El puerto 8000 ya está ocupado por otra API que sigue corriendo. | Frená la otra instancia con Ctrl+C, o levantá esta en otro puerto: `uvicorn app.main:app --port 8001`. |
 | `Reiniciando ... (se borran todas las tablas y sus datos)` | Aviso normal de `reiniciar.py`: destruye el contenido de la base apuntada. | Confirmá que `DATABASE_URL` apunta a la base de desarrollo, no a una con datos reales. |
 
