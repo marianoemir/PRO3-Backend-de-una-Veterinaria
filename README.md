@@ -1,8 +1,12 @@
 # PRO3 — Backend de una Veterinaria
 
-**Grupo:** Lobos Solitarios
+## 🐺 Grupo: Lobos Solitarios (Nro de Grupo: 10.)
+### 👥 Integrantes:
+* ### **Mariano Chirino**
+* ### **Andrés Fabre**
+* ### **Facundo Quiroga**
 
-**Integrantes:** Mariano Chirino, Andrés Fabre, Facundo Quiroga.
+---
 
 API REST para una veterinaria de barrio: dueños, fichas, mascotas, catálogo de prácticas y turnos.
 Construida con **FastAPI + SQLModel (async) + PostgreSQL 16+**. Solo backend: sin frontend, autenticación, Docker ni CI.
